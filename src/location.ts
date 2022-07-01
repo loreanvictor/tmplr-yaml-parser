@@ -7,6 +7,10 @@ export class LocatedError extends Error {
     readonly proxy: Error | unknown,
     readonly location: Location
   ) { super((proxy as any).message) }
+
+  source() {
+    return this.location.file.range(this.location.range, { surrounding: 1 })
+  }
 }
 
 
@@ -20,7 +24,7 @@ export class LocatedExecution<T> extends Execution<T> {
 
   async run() {
     try {
-      return (this.proxy as any).run()
+      return await (this.proxy as any).run()
     } catch (err) {
       throw new LocatedError(err, this.location)
     }
