@@ -1,4 +1,4 @@
-import { Eval, If } from '@tmplr/core'
+import { From, If } from '@tmplr/core'
 import { MappedNode } from 'mapped-yaml'
 
 import { ParsingContext, ParsingRule } from '../../rule'
@@ -11,7 +11,7 @@ export class IfRule extends ParsingRule {
 
   resolve(node: MappedNode, context: ParsingContext): If {
     const condition = typeof node.object['if'].object === 'string' ?
-      new Eval(node.object['if'].object, context.evaluationContext) :
+      new From(node.object['if'].object, context.scope) :
       context.parse(node.object['if'])
 
     const thn = { ...node.object }
