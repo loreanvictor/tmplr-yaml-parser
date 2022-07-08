@@ -10,6 +10,6 @@ export class ValueRule extends ParsingRule {
   }
 
   resolve(node: MappedNode, _: ParsingContext): Value {
-    return new Value(node.object)
+    return new Value(`${node.object}`)
   }
 }
