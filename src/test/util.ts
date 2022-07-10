@@ -1,4 +1,5 @@
 // istanbul ignore file
+import { basename, dirname, join, normalize, isAbsolute } from 'path'
 
 import { providerFromFunctions, ProviderNamespace, scopeFromProviders, FileSystem, ChangeLog, EvaluationContext, STANDARD_PIPES } from '@tmplr/core'
 
@@ -15,7 +16,9 @@ function testFS(files: {[key: string]: string}, root: string, scope: string): Fi
     write: jest.fn(async (name: string, content: string) => {
       files[name] = content
     }),
-    absolute: jest.fn(_ => _),
+    absolute: jest.fn(path => normalize(isAbsolute(path) ? path : join(root, path))),
+    dirname: jest.fn(path => dirname(path)),
+    basename: jest.fn(path => basename(path)),
     rm: jest.fn(async (name: string) => {
       delete files[name]
     }),

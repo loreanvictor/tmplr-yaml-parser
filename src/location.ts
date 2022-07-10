@@ -1,5 +1,4 @@
 import { Runnable, Execution } from '@tmplr/core'
-import { pipe, observe, tap } from 'streamlets'
 import { Location } from 'mapped-yaml'
 
 
@@ -17,25 +16,20 @@ export class LocatedError extends Error {
 
 export class LocatedExecution<T> extends Execution<T> {
   constructor(
-    public readonly proxy: Execution<T>,
-    public readonly location: Location,
+    public readonly runnable: LocatedRunnable<T>,
   ) {
     super()
   }
 
   async run() {
-    const observation = pipe(
-      this.proxy.tracker,
-      tap(stack => this.tracker.receive(stack)),
-      observe,
-    )
-
     try {
-      return await (this.proxy as any).run()
+      return await this.delegate(this.runnable.proxy.run())
     } catch (err) {
-      throw new LocatedError(err, this.location)
-    } finally {
-      observation.stop()
+      if (err instanceof LocatedError) {
+        throw err
+      } else {
+        throw new LocatedError(err, this.runnable.location)
+      }
     }
   }
 }
@@ -49,7 +43,7 @@ export class LocatedRunnable<T> extends Runnable<T> {
     super()
   }
 
-  run() {
-    return new LocatedExecution(this.proxy.run(), this.location)
+  run(): LocatedExecution<T> {
+    return new LocatedExecution(this)
   }
 }

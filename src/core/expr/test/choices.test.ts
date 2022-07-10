@@ -2,8 +2,8 @@ import { ChoicesExecution } from '@tmplr/core'
 import { pipe, tap, observe } from 'streamlets'
 
 import { ReadRule, ChoicesRule, EvalRule } from '../..'
+import { LocatedError } from '../../../location'
 import { Parser } from '../../../parser'
-import { LocatedExecution } from '../../../location'
 import { testSetup } from '../../../test/util'
 
 
@@ -43,8 +43,7 @@ choices:
     pipe(
       exec.tracker,
       tap(trace => {
-        const peek = trace.peek()
-        const current = peek instanceof LocatedExecution ? peek.proxy : peek
+        const current = trace.peek()
 
         if (current instanceof ChoicesExecution) {
           current.plug(() => ({
@@ -108,7 +107,9 @@ choices:
     const parser = new Parser([new ReadRule, new ChoicesRule, new EvalRule], scope, context, fs, log)
 
     await expect(parser.parse('file1')).resolves.toEqual(expect.anything())
-    await expect(() => parser.parse('file2')).rejects.toThrow()
-    await expect(() => parser.parse('file3')).rejects.toThrow()
+    await expect(() => parser.parse('file2')).rejects.toThrow(LocatedError)
+    await expect(() => parser.parse('file3')).rejects.toThrow(LocatedError)
+
+    // TODO: test the error boundaries.
   })
 })
