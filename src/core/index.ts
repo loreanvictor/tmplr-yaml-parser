@@ -1,5 +1,5 @@
 import { ReadRule, IfRule, StepsRule } from './command'
-import { EvalRule, FromRule, ValueRule } from './expr'
+import { EvalRule, FromRule, PromptRule, ChoicesRule, PathRule } from './expr'
 
 
 export const DEFAULT_RULE_SET = [
@@ -8,8 +8,11 @@ export const DEFAULT_RULE_SET = [
   new EvalRule(),
   new StepsRule(),
   new FromRule(),
-  new ValueRule(),
+  new ChoicesRule(),
+  new PromptRule(),
+  new PathRule(),
+  // new ValueRule(),
 ]
 
 
-export { IfRule, ReadRule, FromRule, ValueRule, EvalRule, StepsRule }
+export { IfRule, ReadRule, FromRule, EvalRule, StepsRule, ChoicesRule, PathRule, PromptRule }

@@ -1,5 +1,6 @@
 import { From, If } from '@tmplr/core'
 import { MappedNode } from 'mapped-yaml'
+import { LocatedRunnable } from '../../location'
 
 import { ParsingContext, ParsingRule } from '../../rule'
 
@@ -11,7 +12,7 @@ export class IfRule extends ParsingRule {
 
   resolve(node: MappedNode, context: ParsingContext): If {
     const condition = typeof node.object['if'].object === 'string' ?
-      new From(node.object['if'].object, context.scope) :
+      new LocatedRunnable(new From(node.object['if'].object, context.scope), node.object['if'].location) :
       context.parse(node.object['if'])
 
     const thn = { ...node.object }

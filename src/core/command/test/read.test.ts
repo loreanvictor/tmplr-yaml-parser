@@ -1,4 +1,4 @@
-import { ReadRule, FromRule, ValueRule } from '../..'
+import { ReadRule, FromRule, EvalRule } from '../..'
 import { LocatedError } from '../../../location'
 import { Parser } from '../../../parser'
 import { testSetup } from '../../../test/util'
@@ -17,7 +17,7 @@ describe(ReadRule, () => {
       }
     })
 
-    const parser = new Parser([new ReadRule, new FromRule, new ValueRule], scope, context, fs, log)
+    const parser = new Parser([new ReadRule, new FromRule, new EvalRule], scope, context, fs, log)
     const res = await parser.parse('whatever')
 
     await res.run().execute()
@@ -33,7 +33,7 @@ describe(ReadRule, () => {
       }
     })
 
-    const parser = new Parser([new ReadRule, new FromRule, new ValueRule], scope, context, fs, log)
+    const parser = new Parser([new ReadRule, new FromRule, new EvalRule], scope, context, fs, log)
     const res = await parser.parse('whatever')
 
     await res.run().execute()
@@ -54,7 +54,7 @@ describe(ReadRule, () => {
       }
     })
 
-    const parser = new Parser([new ReadRule, new FromRule, new ValueRule], scope, context, fs, log)
+    const parser = new Parser([new ReadRule, new FromRule, new EvalRule], scope, context, fs, log)
     const res = await parser.parse('whatever')
 
     try {

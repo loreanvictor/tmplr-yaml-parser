@@ -1,6 +1,6 @@
 import { Parser } from '../parser'
 import { testSetup } from './util'
-import { EvalRule, ReadRule, StepsRule, FromRule, ValueRule } from '../core'
+import { EvalRule, ReadRule, StepsRule, FromRule } from '../core'
 
 
 describe(Parser, () => {
@@ -28,7 +28,6 @@ steps:
       new ReadRule,
       new StepsRule,
       new FromRule,
-      new ValueRule,
       new EvalRule,
     ], scope, context, fs, log)
 
@@ -65,7 +64,6 @@ steps:
       new ReadRule,
       new StepsRule,
       new FromRule,
-      new ValueRule,
       new EvalRule,
     ], scope, context, fs, log)
 
@@ -103,7 +101,6 @@ steps:
     const parser = new Parser([
       new ReadRule,
       new StepsRule,
-      new ValueRule,
       new EvalRule,
     ], scope, context, fs, log)
 

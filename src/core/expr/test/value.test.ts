@@ -7,7 +7,7 @@ describe(ValueRule, () => {
     const node = { object: 'foo', location: undefined as any }
 
     expect(rule.applies(node)).toBe(true)
-    const value = await rule.resolve(node, undefined as any)
+    const value = await rule.parse(node, undefined as any)
     await expect(value.run().execute()).resolves.toBe('foo')
   })
 
@@ -16,7 +16,7 @@ describe(ValueRule, () => {
     const node = { object: 42, location: undefined as any }
 
     expect(rule.applies(node)).toBe(true)
-    const value = await rule.resolve(node, undefined as any)
+    const value = await rule.parse(node, undefined as any)
     await expect(value.run().execute()).resolves.toBe('42')
   })
 
@@ -25,7 +25,7 @@ describe(ValueRule, () => {
     const node = { object: false, location: undefined as any }
 
     expect(rule.applies(node)).toBe(true)
-    const value = await rule.resolve(node, undefined as any)
+    const value = await rule.parse(node, undefined as any)
     await expect(value.run().execute()).resolves.toBe('false')
   })
 })

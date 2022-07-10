@@ -1,4 +1,5 @@
 import { Runnable, Execution } from '@tmplr/core'
+import { pipe, observe, tap } from 'streamlets'
 import { Location } from 'mapped-yaml'
 
 
@@ -23,10 +24,18 @@ export class LocatedExecution<T> extends Execution<T> {
   }
 
   async run() {
+    const observation = pipe(
+      this.proxy.tracker,
+      tap(stack => this.tracker.receive(stack)),
+      observe,
+    )
+
     try {
       return await (this.proxy as any).run()
     } catch (err) {
       throw new LocatedError(err, this.location)
+    } finally {
+      observation.stop()
     }
   }
 }

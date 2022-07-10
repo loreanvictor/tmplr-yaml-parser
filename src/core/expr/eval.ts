@@ -6,11 +6,13 @@ import { ParsingRule, ParsingContext } from '../../rule'
 
 export class EvalRule extends ParsingRule {
   applies(node: MappedNode): boolean {
-    return typeof node.object['eval']?.object === 'string'
+    return typeof node.object === 'string' || typeof node.object['eval']?.object === 'string'
   }
 
   resolve(node: MappedNode, context: ParsingContext): Eval {
-    if (node.object['steps']) {
+    if (typeof node.object === 'string') {
+      return new Eval(node.object, context.evaluationContext)
+    } else if (node.object['steps']) {
       const stps = { ...node.object }
       delete stps['eval']
 
