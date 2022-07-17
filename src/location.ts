@@ -1,12 +1,12 @@
 import { Runnable, Execution } from '@tmplr/core'
-import { Location } from 'mapped-yaml'
+import { Location } from 'mapped-file'
 
 
 export class LocatedError extends Error {
   constructor(
-    readonly proxy: Error | unknown,
+    readonly proxy: Error | string | unknown,
     readonly location: Location
-  ) { super((proxy as any).message) }
+  ) { super(typeof proxy === 'string' ? proxy : (proxy as any).message) }
 
   source() {
     return this.location.file.range(this.location.range, { surrounding: 1 })

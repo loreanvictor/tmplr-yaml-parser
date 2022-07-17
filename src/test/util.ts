@@ -4,26 +4,26 @@ import { basename, dirname, join, normalize, isAbsolute } from 'path'
 import { providerFromFunctions, ProviderNamespace, scopeFromProviders, FileSystem, ChangeLog, EvaluationContext, STANDARD_PIPES } from '@tmplr/core'
 
 
-function testFS(files: {[key: string]: string}, root: string, scope: string): FileSystem {
+function testFS(options: { files: {[key: string]: string} }, root: string, scope: string): FileSystem {
   return {
     read: jest.fn(async (name: string) => {
-      if (name in files) {
-        return files[name]!
+      if (name in options.files) {
+        return options.files[name]!
       }
 
       throw new Error('File not found.')
     }),
     write: jest.fn(async (name: string, content: string) => {
-      files[name] = content
+      options.files[name] = content
     }),
     absolute: jest.fn(path => normalize(isAbsolute(path) ? path : join(root, path))),
     dirname: jest.fn(path => dirname(path)),
     basename: jest.fn(path => basename(path)),
     rm: jest.fn(async (name: string) => {
-      delete files[name]
+      delete options.files[name]
     }),
     access: jest.fn(async(name: string) => {
-      if (!(name in files)) {
+      if (!(name in options.files)) {
         throw new Error('File not found.')
       }
     }),
@@ -51,7 +51,7 @@ export function testSetup(options: {
   }
 
   const scope = scopeFromProviders(provns, options?.varprefix || '_')
-  const fs = testFS(options.files || {}, options?.root || '.', options?.scope || '.')
+  const fs = testFS({ files: options.files || {} }, options?.root || '.', options?.scope || '.')
   const log = new ChangeLog()
   const context = new EvaluationContext(scope, STANDARD_PIPES)
 

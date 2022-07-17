@@ -43,7 +43,8 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@tmplr/core": "^0.3.0",
-    "mapped-yaml": "^0.1.0"
+    "@tmplr/core": "^0.4.0",
+    "mapped-file": "^0.1.1",
+    "mapped-yaml": "^0.2.2"
   }
 }

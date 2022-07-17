@@ -1,4 +1,4 @@
-import { Scope, EvaluationContext, FileSystem, ChangeLog, Runnable } from '@tmplr/core'
+import { Scope, EvaluationContext, FileSystem, ChangeLog, Runnable, ParseFn } from '@tmplr/core'
 import { MappedNode } from 'mapped-yaml'
 
 import { LocatedRunnable } from './location'
@@ -9,7 +9,8 @@ export interface ParsingContext {
   evaluationContext: EvaluationContext
   filesystem: FileSystem
   changelog: ChangeLog
-  parse: (node: MappedNode) => LocatedRunnable<any>
+  parseNode: (node: MappedNode) => LocatedRunnable<any>
+  parseFile: ParseFn,
 }
 
 

@@ -28,7 +28,17 @@ export class Parser {
       evaluationContext: this.evaluationContext,
       filesystem: this.filesystem,
       changelog: this.changelog,
-      parse: (child: MappedNode) => this.parseNode(child, context),
+      parseNode: (child: MappedNode) => this.parseNode(child, context),
+      parseFile: (
+        _content: string,
+        _filename: string,
+        scope: Scope,
+        _context: EvaluationContext,
+        filesystem: FileSystem,
+        changelog: ChangeLog,
+      ) => {
+        return new Parser(this.rules, scope, _context, filesystem, changelog).parseString(_content, _filename)
+      }
     }
 
     return this.parseNode(node, context)

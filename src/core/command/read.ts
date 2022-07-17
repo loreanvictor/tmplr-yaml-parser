@@ -1,21 +1,27 @@
-import { MappedNode } from 'mapped-yaml'
+import { isObjectNode, isStringNode, MappedNode, MappedObjectWithSchema, MappedPrimitive } from 'mapped-yaml'
 import { Read } from '@tmplr/core'
 
 import { ParsingContext, ParsingRule } from '../../rule'
 
 
+export type ReadNode = MappedObjectWithSchema<{
+  read: MappedPrimitive<string>
+  [key: string]: MappedNode
+}>
+
+
 export class ReadRule extends ParsingRule {
   applies(node: MappedNode): boolean {
-    return typeof node.object['read']?.object === 'string'
+    return isObjectNode(node) && !!node.object['read'] && isStringNode(node.object['read'])
   }
 
-  resolve(node: MappedNode, context: ParsingContext): Read {
-    const key = node.object['read'].object
-    const copy = { ...node.object }
-    delete copy['read']
+  resolve(node: ReadNode, context: ParsingContext): Read {
+    const key = node.object.read.object
+    const rest: {[key: string]: MappedNode} = { ...node.object }
+    delete rest['read']
 
-    const expr = context.parse({
-      object: copy,
+    const expr = context.parseNode({
+      object: rest,
       location: node.location
     })
 

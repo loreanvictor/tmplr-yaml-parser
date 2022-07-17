@@ -1,26 +1,38 @@
-import { Eval } from '@tmplr/core'
-import { MappedNode } from 'mapped-yaml'
+import { Eval, Steps } from '@tmplr/core'
+import {
+  isArrayNode, isObjectNode, isStringNode, MappedArrayWithSchema,
+  MappedNode, MappedObject, MappedObjectWithSchema, MappedPrimitive
+} from 'mapped-yaml'
 
 import { ParsingRule, ParsingContext } from '../../rule'
 
 
+export type EvalNode = MappedPrimitive<string> | MappedObjectWithSchema<{
+  eval: MappedPrimitive<string>
+  steps?: MappedArrayWithSchema<MappedObject>
+}>
+
+
 export class EvalRule extends ParsingRule {
   applies(node: MappedNode): boolean {
-    return typeof node.object === 'string' || typeof node.object['eval']?.object === 'string'
+    return isStringNode(node) || (
+      isObjectNode(node) &&
+      !!node.object['eval'] &&
+      isStringNode(node.object['eval']) && (
+        !node.object['steps'] || isArrayNode(node.object['steps'])
+      )
+    )
   }
 
-  resolve(node: MappedNode, context: ParsingContext): Eval {
-    if (typeof node.object === 'string') {
+  resolve(node: EvalNode, context: ParsingContext): Eval {
+    if (isStringNode(node)) {
       return new Eval(node.object, context.evaluationContext)
-    } else if (node.object['steps']) {
-      const stps = { ...node.object }
-      delete stps['eval']
+    } else if (node.object.steps) {
+      const steps = node.object.steps.object.map(step => context.parseNode(step))
 
-      const steps = context.parse({ object: stps, location: node.location })
-
-      return new Eval(node.object['eval'].object, context.evaluationContext, steps)
+      return new Eval(node.object.eval.object, context.evaluationContext, new Steps(steps))
     } else {
-      return new Eval(node.object['eval'].object, context.evaluationContext)
+      return new Eval(node.object.eval.object, context.evaluationContext)
     }
   }
 }

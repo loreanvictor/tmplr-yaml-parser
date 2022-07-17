@@ -1,28 +1,35 @@
 import { From, If } from '@tmplr/core'
-import { MappedNode } from 'mapped-yaml'
+import { MappedNode, MappedObject, isObjectNode, isStringNode, MappedPrimitive, MappedObjectWithSchema } from 'mapped-yaml'
 import { LocatedRunnable } from '../../location'
 
 import { ParsingContext, ParsingRule } from '../../rule'
 
 
+export type IfNode = MappedObjectWithSchema<{
+  if: MappedPrimitive<string> | MappedObject
+  else?: MappedObject
+}>
+
+
 export class IfRule extends ParsingRule {
   applies(node: MappedNode): boolean {
-    return typeof node.object['if'] !== 'undefined'
+    return isObjectNode(node) &&
+      !!node.object['if'] &&
+      (isObjectNode(node.object['if']) || isStringNode(node.object['if']))
+      && (!node.object['else'] || isObjectNode(node.object['else']))
   }
 
-  resolve(node: MappedNode, context: ParsingContext): If {
-    const condition = typeof node.object['if'].object === 'string' ?
-      new LocatedRunnable(new From(node.object['if'].object, context.scope), node.object['if'].location) :
-      context.parse(node.object['if'])
+  resolve(node: IfNode, context: ParsingContext): If {
+    const condition = isStringNode(node.object.if!) ?
+      new LocatedRunnable(new From(node.object.if.object, context.scope), node.object.if.location) :
+      context.parseNode(node.object.if)
 
-    const thn = { ...node.object }
+    const thn: {[key: string]: MappedNode} = { ...node.object }
     delete thn['if']
     delete thn['else']
 
-    const then = context.parse({ object: thn, location: node.location })
-
-    const els = node.object['else']
-    const _else = els ? context.parse(els) : undefined
+    const then = context.parseNode({ object: thn, location: node.location })
+    const _else = node.object.else ? context.parseNode(node.object.else) : undefined
 
     return new If(condition, then, _else)
   }
