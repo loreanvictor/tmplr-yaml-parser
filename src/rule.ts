@@ -4,6 +4,10 @@ import { MappedNode } from 'mapped-yaml'
 import { LocatedRunnable } from './location'
 
 
+// TODO: add a separate evaluation context parameter for evaluating files
+//       this means the input parameters for Parser constructor should also
+//       change to include this new context.
+
 export interface ParsingContext {
   scope: Scope
   evaluationContext: EvaluationContext

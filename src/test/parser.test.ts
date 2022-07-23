@@ -1,5 +1,6 @@
+import { createTestSetup } from '@tmplr/jest'
+
 import { Parser } from '../parser'
-import { testSetup } from './util'
 import { EvalRule, ReadRule, StepsRule, FromRule } from '../core'
 
 
@@ -14,7 +15,7 @@ steps:
     eval: 'hellow {{ stuff.other_thing | UPPERCASE }}'
 `
 
-    const { scope, fs, log, context } = testSetup({
+    const { scope, fs, log, context } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -50,7 +51,7 @@ steps:
     eval: 'hellow {{ stuff.other_thing | UPPERCASE }}'
 `
 
-    const { scope, fs, log, context } = testSetup({
+    const { scope, fs, log, context } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -88,7 +89,7 @@ steps:
     eval: 'hellow {{ stuff.other_thing | UPPERCASE }}'
 `
 
-    const { scope, fs, log, context } = testSetup({
+    const { scope, fs, log, context } = createTestSetup({
       files: { file },
       providers: {
         stuff: {

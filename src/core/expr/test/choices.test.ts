@@ -1,10 +1,10 @@
 import { ChoicesExecution } from '@tmplr/core'
+import { createTestSetup } from '@tmplr/jest'
 import { pipe, tap, observe } from 'streamlets'
 
 import { ReadRule, ChoicesRule, EvalRule } from '../..'
 import { LocatedError } from '../../../location'
 import { Parser } from '../../../parser'
-import { testSetup } from '../../../test/util'
 
 
 describe(ChoicesRule, () => {
@@ -21,7 +21,7 @@ choices:
     value: 'hola {{ stuff.name }}'
 `
 
-    const { scope, log, fs, context } = testSetup({
+    const { scope, log, fs, context } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -103,7 +103,7 @@ choices:
     value: 'hola {{ stuff.name }}'
 `
 
-    const { scope, log, fs, context } = testSetup({files: { file1, file2, file3 }})
+    const { scope, log, fs, context } = createTestSetup({files: { file1, file2, file3 }})
     const parser = new Parser([new ReadRule, new ChoicesRule, new EvalRule], scope, context, fs, log)
 
     await expect(parser.parse('file1')).resolves.toEqual(expect.anything())

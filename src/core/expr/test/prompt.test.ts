@@ -1,9 +1,9 @@
 import { PromptExecution } from '@tmplr/core'
+import { createTestSetup } from '@tmplr/jest'
 import { pipe, tap, observe } from 'streamlets'
 
 import { PromptRule, EvalRule, ReadRule } from '../..'
 import { Parser } from '../../../parser'
-import { testSetup } from '../../../test/util'
 
 
 describe(PromptRule, () => {
@@ -16,7 +16,7 @@ prompt: 'Dear {{ stuff.name }}, what should X be?',
 default: "{{ stuff.name }}'s stuff",
 `
 
-    const { scope, log, fs, context } = testSetup({
+    const { scope, log, fs, context } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -75,7 +75,7 @@ read: x
 prompt: 'what should X be?',
 `
 
-    const { scope, log, fs, context } = testSetup({ files: { file } })
+    const { scope, log, fs, context } = createTestSetup({ files: { file } })
 
     const parser = new Parser(
       [new ReadRule, new PromptRule, new EvalRule],

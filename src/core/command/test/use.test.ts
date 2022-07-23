@@ -1,20 +1,24 @@
 import { createTestSetup } from '@tmplr/jest'
 
-import { RunRule, ReadRule, EvalRule } from '../../'
+import { UseRule, ReadRule, EvalRule } from '../../'
 import { Parser } from '../../../parser'
 import { LocatedError } from '../../../location'
 
 
-describe(RunRule, () => {
-  test('parses a run command.', async () => {
+describe(UseRule, () => {
+  test('parses a use command.', async () => {
     const { scope, context, log, fs } = createTestSetup({
       files: {
-        main: 'run: side\nread:\n  x: x',
-        side: 'read: x\neval: halo!'
+        main: 'use: remote\nread:\n  x: x',
+      },
+      remotes: {
+        remote: {
+          recipe: 'read: x\neval: halo!'
+        }
       }
     })
 
-    const parser = new Parser([new RunRule, new ReadRule, new EvalRule], scope, context, fs, log)
+    const parser = new Parser([new UseRule('recipe'), new ReadRule, new EvalRule], scope, context, fs, log)
     const cmd = await parser.parse('main')
 
     await cmd.run().execute()
@@ -26,8 +30,12 @@ describe(RunRule, () => {
   test('also parses input arguments properly.', async () => {
     const { scope, context, log, fs } = createTestSetup({
       files: {
-        main: 'run: side\nread:\n  x: x\nwith:\n  greet: "{{ stuff.thing | CONSTANT_CASE }}"',
-        side: 'read: x\neval: "{{ args.greet }} my man!"'
+        main: 'use: remote\nrecipe: main\nread:\n  x: x\nwith:\n  greet: "{{ stuff.thing | CONSTANT_CASE }}"',
+      },
+      remotes: {
+        remote: {
+          main: 'read: x\neval: "{{ args.greet }} my man!"'
+        }
       },
       providers: {
         stuff: {
@@ -36,7 +44,7 @@ describe(RunRule, () => {
       }
     })
 
-    const parser = new Parser([new RunRule, new ReadRule, new EvalRule], scope, context, fs, log)
+    const parser = new Parser([new UseRule('--'), new ReadRule, new EvalRule], scope, context, fs, log)
     const cmd = await parser.parse('main')
 
     await cmd.run().execute()
@@ -48,8 +56,12 @@ describe(RunRule, () => {
   test('parser throws error if wrong with arguments are provided.', async () => {
     const { scope, context, log, fs } = createTestSetup({
       files: {
-        main: 'run: side\nread:\n  x:\n    eval: x\nwith:\n  greet: "{{ stuff.thing | CONSTANT_CASE }}"',
-        side: 'read: x\neval: "{{ args.greet }} my man!"'
+        main: 'use: remote\nread:\n  x:\n    eval: x\nwith:\n  greet: "{{ stuff.thing | CONSTANT_CASE }}"',
+      },
+      remotes: {
+        remote: {
+          recipe: 'read: x\neval: "{{ args.greet }} my man!"'
+        }
       },
       providers: {
         stuff: {
@@ -58,7 +70,7 @@ describe(RunRule, () => {
       }
     })
 
-    const parser = new Parser([new RunRule, new ReadRule, new EvalRule], scope, context, fs, log)
+    const parser = new Parser([new UseRule('recipe'), new ReadRule, new EvalRule], scope, context, fs, log)
     await expect(() => parser.parse('main')).rejects.toThrow(LocatedError)
   })
 })

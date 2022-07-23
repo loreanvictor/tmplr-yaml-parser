@@ -1,6 +1,7 @@
+import { createTestSetup } from '@tmplr/jest'
+
 import { PathRule, ReadRule, EvalRule } from '../../'
 import { Parser } from '../../../parser'
-import { testSetup } from '../../../test/util'
 
 
 describe(PathRule, () => {
@@ -10,7 +11,7 @@ read: x
 path: './whatever/{{ stuff.thing }}/xyz.yml'
 `
 
-    const { scope, log, fs, context } = testSetup({
+    const { scope, log, fs, context } = createTestSetup({
       files: { file },
       providers: { stuff: { thing: async () => 'blabla' } },
       root: '/home/stuff'

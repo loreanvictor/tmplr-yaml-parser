@@ -1,6 +1,7 @@
+import { createTestSetup } from '@tmplr/jest'
+
 import { EvalRule, ReadRule, StepsRule } from '../..'
 import { Parser } from '../../../parser'
-import { testSetup } from '../../../test/util'
 
 
 describe(EvalRule, () => {
@@ -9,7 +10,7 @@ describe(EvalRule, () => {
 read: x
 eval: halo!
 `
-    const { scope, context, log, fs } = testSetup({
+    const { scope, context, log, fs } = createTestSetup({
       files: { file },
     })
 
@@ -27,7 +28,7 @@ eval: halo!
 read: x
 eval: 'halo {{ stuff.thing }}!'
 `
-    const { scope, context, log, fs } = testSetup({
+    const { scope, context, log, fs } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -53,7 +54,7 @@ eval: 'halo {{ stuff.thing }}!'
       - read: greet
         eval: halo
     `
-    const { scope, context, log, fs } = testSetup({
+    const { scope, context, log, fs } = createTestSetup({
       files: { file },
       providers: {
         stuff: {

@@ -1,12 +1,13 @@
+import { createTestSetup } from '@tmplr/jest'
+
 import { ReadRule, FromRule, EvalRule } from '../..'
 import { LocatedError } from '../../../location'
 import { Parser } from '../../../parser'
-import { testSetup } from '../../../test/util'
 
 
 describe(ReadRule, () => {
   test('parses a read command properly.', async () => {
-    const { scope, context, log, fs } = testSetup({
+    const { scope, context, log, fs } = createTestSetup({
       files: {
         whatever: 'read: whut\nfrom: stuff.thing'
       },
@@ -27,7 +28,7 @@ describe(ReadRule, () => {
   })
 
   test('parses a read command fallback properly.', async () => {
-    const { scope, context, fs, log } = testSetup({
+    const { scope, context, fs, log } = createTestSetup({
       files: {
         whatever: 'read: whut\nfrom: stuff.thing\nfallback: wassup'
       }
@@ -43,7 +44,7 @@ describe(ReadRule, () => {
   })
 
   test('isolates error boundaries properly.', async () => {
-    const { scope, context, fs, log } = testSetup({
+    const { scope, context, fs, log } = createTestSetup({
       files: {
         whatever: 'read: whut\nfrom: stuff.thing'
       },

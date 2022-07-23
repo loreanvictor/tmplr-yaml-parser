@@ -1,6 +1,7 @@
+import { createTestSetup } from '@tmplr/jest'
+
 import { IfRule, EvalRule, ReadRule, StepsRule } from '../..'
 import { Parser } from '../../../parser'
-import { testSetup } from '../../../test/util'
 
 
 describe(IfRule, () => {
@@ -17,7 +18,7 @@ steps:
     read: z
     eval: world!
 `
-    const { scope, context, log, fs } = testSetup({
+    const { scope, context, log, fs } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -55,7 +56,7 @@ steps:
       eval: world!!
 `
 
-    const { scope, context, log, fs } = testSetup({
+    const { scope, context, log, fs } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -92,7 +93,7 @@ steps:
     read: z
     eval: '{{ stuff.empty }} - world!'
 `
-    const { scope, context, log, fs } = testSetup({
+    const { scope, context, log, fs } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
