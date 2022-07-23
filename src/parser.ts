@@ -22,10 +22,12 @@ export class Parser {
 
   parseString(content: string, filename = '<runtime>') {
     const node = parse(content, filename)
+    const extEvalContext = new EvaluationContext(this.scope.vars, this.evaluationContext.pipes)
 
     const context: ParsingContext = {
       scope: this.scope,
       evaluationContext: this.evaluationContext,
+      extEvalContext,
       filesystem: this.filesystem,
       changelog: this.changelog,
       parseNode: (child: MappedNode) => this.parseNode(child, context),

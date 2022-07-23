@@ -11,6 +11,7 @@ import { LocatedRunnable } from './location'
 export interface ParsingContext {
   scope: Scope
   evaluationContext: EvaluationContext
+  extEvalContext: EvaluationContext,
   filesystem: FileSystem
   changelog: ChangeLog
   parseNode: (node: MappedNode) => LocatedRunnable<any>
