@@ -1,4 +1,4 @@
-import { ReadRule, IfRule, StepsRule, RunRule, UseRule, CopyRule, UpdateRule, RemoveRule } from './command'
+import { ReadRule, IfRule, StepsRule, RunRule, UseRule, CopyRule, UpdateRule, RemoveRule, DegitRule } from './command'
 import { EvalRule, FromRule, PromptRule, ChoicesRule, PathRule } from './expr'
 
 
@@ -6,11 +6,12 @@ export const STANDARD_RULE_SET = [
   new IfRule(),
   new RunRule(),
   new UseRule('.tmplr.yml'),
+  new DegitRule(),
   new CopyRule(),
   new UpdateRule(),
   new RemoveRule(),
-  new ReadRule(),
 
+  new ReadRule(),
   new EvalRule(),
   new StepsRule(),
 
@@ -21,9 +22,5 @@ export const STANDARD_RULE_SET = [
 ]
 
 
-export {
-  IfRule, ReadRule, FromRule, EvalRule, StepsRule,
-  ChoicesRule, PathRule, PromptRule,
-  RunRule, UseRule,
-  CopyRule, UpdateRule, RemoveRule,
-}
+export * from './command'
+export * from './expr'

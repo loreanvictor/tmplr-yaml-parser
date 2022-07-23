@@ -6,4 +6,4 @@ export * from './use'
 export * from './copy'
 export * from './update'
 export * from './remove'
-
+export * from './degit'
