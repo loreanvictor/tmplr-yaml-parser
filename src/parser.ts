@@ -1,7 +1,7 @@
 import { EvaluationContext, Scope, FileSystem, ChangeLog } from '@tmplr/core'
 import { MappedNode, parse } from 'mapped-yaml'
-import { LocatedError } from './location'
 
+import { LocatedError } from './location'
 import { ParsingContext, ParsingRule } from './rule'
 
 
