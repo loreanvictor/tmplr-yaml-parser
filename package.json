@@ -1,6 +1,6 @@
 {
   "name": "@tmplr/yaml-parser",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "YAML parser for tmplr",
   "main": "dist/commonjs/index.js",
   "module": "dist/es/index.js",
