@@ -5,7 +5,7 @@ import { EvalRule, FromRule, PromptRule, ChoicesRule, PathRule } from './expr'
 export const STANDARD_RULE_SET = [
   new IfRule(),
   new RunRule(),
-  new UseRule('.tmplr.yml'),
+  new UseRule('.tmplr.yml'), // TODO: this should be parameterized
   new DegitRule(),
   new CopyRule(),
   new UpdateRule(),
