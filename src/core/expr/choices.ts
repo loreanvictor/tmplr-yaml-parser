@@ -1,11 +1,12 @@
 import { Choice, Choices } from '@tmplr/core'
 import {
-  isArrayNode, isObjectNode, isStringNode, MappedArrayWithSchema,
+  isStringNode, MappedArrayWithSchema,
   MappedNode, MappedObject, MappedObjectWithSchema, MappedPrimitive
 } from 'mapped-yaml'
 
 import { LocatedError } from '../../location'
 import { ParsingContext, ParsingRule } from '../../rule'
+import { hasField, validateArray, validateField, validateStringOrObject } from '../../validation'
 
 
 export type ChoicesNode = MappedObjectWithSchema<{
@@ -16,12 +17,28 @@ export type ChoicesNode = MappedObjectWithSchema<{
   }> | MappedObject>
 }>
 
-// TODO: use a standard ParserError class
+
 export class ChoicesRule extends ParsingRule {
   applies(node: MappedNode): boolean {
-    return isObjectNode(node)
-      && !!node.object['prompt']
-      && !!node.object['choices'] && isArrayNode(node.object['choices'])
+    return hasField(node, 'choices')
+  }
+
+  override validate(node: ChoicesNode) {
+    validateField(node, 'prompt', validateStringOrObject)
+    validateField(node, 'choices', validateArray)
+
+    node.object.choices.object.forEach(n => {
+      validateStringOrObject(n)
+
+      if (!isStringNode(n)) {
+        if (hasField(n, 'label')) {
+          validateField(n, 'label', validateStringOrObject)
+          validateField(n, 'value', validateStringOrObject)
+        } else if (Object.entries(n.object).length !== 1){
+          throw new LocatedError(new Error('Choice must have a singular label'), n.location)
+        }
+      }
+    })
   }
 
   protected resolve(node: ChoicesNode, context: ParsingContext): Choices {
@@ -32,19 +49,11 @@ export class ChoicesRule extends ParsingRule {
 
         return { label: val, value: val }
       } else if (n.object.label) {
-        if (n.object.value === undefined) {
-          throw new LocatedError(new Error('Choice must have a value'), n.location)
-        }
-
         return {
           label: context.parseNode(n.object.label),
           value: context.parseNode(n.object.value)
         }
       } else {
-        if (Object.entries(n.object).length !== 1){
-          throw new LocatedError(new Error('Choice must have a singular label'), n.location)
-        }
-
         const entry = Object.entries(n.object)[0]
 
         return {

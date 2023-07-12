@@ -1,7 +1,8 @@
-import { isObjectNode, isStringNode, MappedNode, MappedObjectWithSchema, MappedPrimitive } from 'mapped-yaml'
+import { MappedNode, MappedObjectWithSchema, MappedPrimitive } from 'mapped-yaml'
 import { Read } from '@tmplr/core'
 
 import { ParsingContext, ParsingRule } from '../../rule'
+import { hasField, validateField, validateString } from '../../validation'
 
 
 export type ReadNode = MappedObjectWithSchema<{
@@ -11,8 +12,12 @@ export type ReadNode = MappedObjectWithSchema<{
 
 
 export class ReadRule extends ParsingRule {
-  applies(node: MappedNode): boolean {
-    return isObjectNode(node) && !!node.object['read'] && isStringNode(node.object['read'])
+  applies(node: MappedNode) {
+    return hasField(node, 'read')
+  }
+
+  override validate(node: MappedNode) {
+    validateField(node, 'read', validateString)
   }
 
   resolve(node: ReadNode, context: ParsingContext): Read {

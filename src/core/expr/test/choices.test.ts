@@ -109,7 +109,77 @@ choices:
     await expect(parser.parse('file1')).resolves.toEqual(expect.anything())
     await expect(() => parser.parse('file2')).rejects.toThrow(LocatedError)
     await expect(() => parser.parse('file3')).rejects.toThrow(LocatedError)
+  })
 
-    // TODO: test the error boundaries.
+  test('throws error when there is no prompt field.', async () => {
+    const file = `
+read: msg
+choices:
+  - hi
+  - hellow
+`
+
+    const { scope, log, fs, context } = createTestSetup({files: { file }})
+    const parser = new Parser([new ReadRule, new ChoicesRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('file')).rejects.toThrow(/prompt/)
+  })
+
+  test('throws error when the prompt field is mistyped.', async () => {
+    const file = `
+    read: msg
+    prompt: 123
+    choices:
+      - hi
+      - hellow
+`
+
+    const { scope, log, fs, context } = createTestSetup({files: { file }})
+    const parser = new Parser([new ReadRule, new ChoicesRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('file')).rejects.toThrow(/prompt.*string/)
+  })
+
+  test('throws error when prompt field has a typo in it.', async () => {
+    const file = `
+    read: msg
+    propmt: 'What's the message?'
+    choices:
+      - hi
+      - hellow
+  `
+
+    const { scope, log, fs, context } = createTestSetup({files: { file }})
+    const parser = new Parser([new ReadRule, new ChoicesRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('file')).rejects.toThrow(/propmt.*prompt/)
+  })
+
+  test('throws error when choices field is not an array.', async () => {
+    const file = `
+    read: msg
+    prompt: 'What's the message?'
+    choices: 123
+  `
+
+    const { scope, log, fs, context } = createTestSetup({files: { file }})
+    const parser = new Parser([new ReadRule, new ChoicesRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('file')).rejects.toThrow(/choices.*array/)
+  })
+
+  test('throws error when choices field has typo.', async () => {
+    const file = `
+    read: msg
+    prompt: 'What's the message?'
+    choises:
+      - hi
+      - hellow
+  `
+
+    const { scope, log, fs, context } = createTestSetup({files: { file }})
+    const parser = new Parser([new ReadRule, new ChoicesRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('file')).rejects.toThrow(/choises.*choices/)
   })
 })

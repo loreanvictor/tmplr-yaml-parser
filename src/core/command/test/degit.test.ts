@@ -27,4 +27,52 @@ describe(DegitRule, () => {
 
     await expect(fs.read('target/file')).resolves.toBe('Hola!')
   })
+
+  test('throws an error if degit field is of wrong type.', async () => {
+    const recipe = `
+    degit: 123
+    to: here
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new DegitRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/degit.*string/)
+  })
+
+  test('throws an error if to field is of wrong type.', async () => {
+    const recipe = `
+    degit: '*'
+    to: 123
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new DegitRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/to.*string/)
+  })
+
+  test('throws an error if degit field has a typo.', async () => {
+    const recipe = `
+    degti: '*'
+    to: here
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new DegitRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/degti.*degit/)
+  })
+
+  test('throws an error if to field has a typo.', async () => {
+    const recipe = `
+    degit: '*'
+    too: here
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new DegitRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/too.*to/)
+  })
 })

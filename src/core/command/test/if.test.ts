@@ -114,4 +114,60 @@ steps:
     await expect(scope.vars.has('_.z')).resolves.toBe(true)
     await expect(scope.vars.get('_.z')).resolves.toBe(' - world!')
   })
+
+  test('throws an error if type of if field is wrong.', async () => {
+    const file = `
+    if: 123
+    read: x
+    eval: halo!
+    `
+
+    const { scope, context, log, fs } = createTestSetup({ files: { file } })
+    const parser = new Parser([ new StepsRule, new IfRule, new ReadRule, new EvalRule ], scope, context, fs, log)
+
+    await expect(parser.parse('file')).rejects.toThrow(/if.*string/)
+  })
+
+  test('throws an error if type of else field is wrong.', async () => {
+    const file = `
+    if: stuff.thing
+    read: x
+    eval: halo!
+    else: world
+    `
+
+    const { scope, context, log, fs } = createTestSetup({ files: { file } })
+    const parser = new Parser([ new StepsRule, new IfRule, new ReadRule, new EvalRule ], scope, context, fs, log)
+
+    await expect(parser.parse('file')).rejects.toThrow(/else.*object/)
+  })
+
+  test('throws error if there is a typo in the if field.', async () => {
+    const file = `
+    If: stuff.thing
+    read: x
+    eval: halo!
+    `
+
+    const { scope, context, log, fs } = createTestSetup({ files: { file } })
+    const parser = new Parser([ new StepsRule, new IfRule, new ReadRule, new EvalRule ], scope, context, fs, log)
+
+    await expect(parser.parse('file')).rejects.toThrow(/If.*if/)
+  })
+
+  test('throws error if there is a typo in the else field.', async () => {
+    const file = `
+    if: stuff.thing
+    read: x
+    eval: halo!
+    Else:
+      read: y
+      eval: hello!
+    `
+
+    const { scope, context, log, fs } = createTestSetup({ files: { file } })
+    const parser = new Parser([ new StepsRule, new IfRule, new ReadRule, new EvalRule ], scope, context, fs, log)
+
+    await expect(parser.parse('file')).rejects.toThrow(/Else.*else/)
+  })
 })

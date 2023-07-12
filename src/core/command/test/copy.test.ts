@@ -71,4 +71,78 @@ steps:
     await expect(fs.read('target/.source')).resolves.toBe('# Hellow YO YO')
     await expect(fs.read('.source')).resolves.toBe('# Hellow {{ _.x | UPPERCASE }}')
   })
+
+  test('throws an error if copy field is of wrong type.', async () => {
+    const recipe = `
+    copy: 123
+    to: here
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new CopyRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/copy.*string/)
+  })
+
+  test('throws an error if to field is of wrong type.', async () => {
+    const recipe = `
+    copy: '*'
+    to: 123
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new CopyRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/to.*string/)
+  })
+
+  test('throws an error if include hidden field is of wrong type.', async () => {
+    const recipe = `
+    copy: '*'
+    to: here
+    include hidden: yes
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new CopyRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/include hidden.*boolean/)
+  })
+
+  test('throws an error if copy field has a typo.', async () => {
+    const recipe = `
+    copi: '*'
+    to: here
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new CopyRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/copi.*copy/)
+  })
+
+  test('throws an error if to field has a typo.', async () => {
+    const recipe = `
+    copy: '*'
+    too: here
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new CopyRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/too.*to/)
+  })
+
+  test('throws an error if include hidden field has a typo.', async () => {
+    const recipe = `
+    copy: '*'
+    to: here
+    include hiddn: true
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new CopyRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/include hiddn.*include hidden/)
+  })
 })

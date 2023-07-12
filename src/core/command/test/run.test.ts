@@ -61,4 +61,76 @@ describe(RunRule, () => {
     const parser = new Parser([new RunRule, new ReadRule, new EvalRule], scope, context, fs, log)
     await expect(() => parser.parse('main')).rejects.toThrow(LocatedError)
   })
+
+  test('throws error if run field is of wrong type.', async () => {
+    const recipe = `
+    run: 123
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new RunRule, new ReadRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/run.*string/)
+  })
+
+  test('throws error if there is a typo in the run field.', async () => {
+    const recipe = `
+    runn: side
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new RunRule, new ReadRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/runn.*run/)
+  })
+
+  test('throws error if there is a typo in the with field.', async () => {
+    const recipe = `
+    run: side
+    withh:
+      greet: "{{ stuff.thing | CONSTANT_CASE }}"
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new RunRule, new ReadRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/withh.*with/)
+  })
+
+  test('throws error if there is a typo in the read field.', async () => {
+    const recipe = `
+    run: side
+    readd:
+      x: x
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new RunRule, new ReadRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/readd.*read/)
+  })
+
+  test('throws error if the with field is of the wrong type.', async () => {
+    const recipe = `
+    run: side
+    with: 123
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new RunRule, new ReadRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/with.*object/)
+  })
+
+  test('throws error if the read field is of the wrong type.', async () => {
+    const recipe = `
+    run: side
+    read: 123
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { recipe } })
+    const parser = new Parser([new RunRule, new ReadRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('recipe')).rejects.toThrow(/read.*object/)
+  })
 })

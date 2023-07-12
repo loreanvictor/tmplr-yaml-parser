@@ -1,10 +1,11 @@
 import {
-  MappedNode, MappedObject, isObjectNode, isStringNode, MappedObjectWithSchema, MappedPrimitive
+  MappedNode, MappedObject, isStringNode, MappedObjectWithSchema, MappedPrimitive
 } from 'mapped-yaml'
 import { Use, Value } from '@tmplr/core'
 
 import { ParsingContext, ParsingRule } from '../../rule'
 import { LocatedError } from '../../location'
+import { hasField, validateField, validateObject, validateOptionalField, validateStringOrObject } from '../../validation'
 
 
 export type UseNode = MappedObjectWithSchema<{
@@ -20,13 +21,23 @@ export class UseRule extends ParsingRule {
     readonly defaultRecipe: string,
   ) { super() }
 
-  applies(node: MappedNode): boolean {
-    return isObjectNode(node)
-      && !!node.object['use']
-      && (isObjectNode(node.object['use']) || isStringNode(node.object['use']))
-      && (!node.object['recipe'] || isObjectNode(node.object['recipe']) || isStringNode(node.object['recipe']))
-      && (!node.object['with'] || isObjectNode(node.object['with']))
-      && (!node.object['read'] || isObjectNode(node.object['read']))
+  applies(node: MappedNode) {
+    return hasField(node, 'use')
+  }
+
+  override validate(node: UseNode) {
+    validateField(node, 'use', validateStringOrObject)
+    validateOptionalField(node, 'recipe', validateStringOrObject)
+    validateOptionalField(node, 'with', validateObject)
+    validateOptionalField(node, 'read', validateObject)
+
+    if (node.object['read']) {
+      Object.entries(node.object.read.object).forEach(([_, value]) => {
+        if (!isStringNode(value)) {
+          throw new LocatedError('read values must be string', value.location)
+        }
+      })
+    }
   }
 
   resolve(node: UseNode, context: ParsingContext): Use {
@@ -44,10 +55,6 @@ export class UseRule extends ParsingRule {
 
     if (node.object.read) {
       Object.entries(node.object.read.object).forEach(([key, value]) => {
-        if (!isStringNode(value)) {
-          throw new LocatedError('read value must be a string', value.location)
-        }
-
         outputs[key] = value.object
       })
     }

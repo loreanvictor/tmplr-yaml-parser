@@ -1,10 +1,10 @@
 import { Degit } from '@tmplr/core'
 import {
-  isObjectNode, isStringNode, MappedNode,
-  MappedObject, MappedObjectWithSchema, MappedPrimitive
+  MappedNode, MappedObject, MappedObjectWithSchema, MappedPrimitive
 } from 'mapped-yaml'
 
 import { ParsingContext, ParsingRule } from '../../rule'
+import { hasField, validateField, validateStringOrObject } from '../../validation'
 
 
 export type DegitNode = MappedObjectWithSchema<{
@@ -14,12 +14,13 @@ export type DegitNode = MappedObjectWithSchema<{
 
 
 export class DegitRule extends ParsingRule {
-  applies(node: MappedNode): boolean {
-    return isObjectNode(node) &&
-      !!node.object['degit'] &&
-      (isObjectNode(node.object['degit']) || isStringNode(node.object['degit']))
-      && !!node.object['to'] &&
-      (isObjectNode(node.object['to']) || isStringNode(node.object['to']))
+  applies(node: MappedNode) {
+    return hasField(node, 'degit')
+  }
+
+  override validate(node: MappedNode) {
+    validateField(node, 'degit', validateStringOrObject)
+    validateField(node, 'to', validateStringOrObject)
   }
 
   resolve(node: DegitNode, context: ParsingContext): Degit {

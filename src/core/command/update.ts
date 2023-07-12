@@ -1,10 +1,10 @@
 import { Update } from '@tmplr/core'
 import {
-  isObjectNode, isStringNode, isBooleanNode, MappedNode,
-  MappedObject, MappedObjectWithSchema, MappedPrimitive
+  MappedNode, MappedObject, MappedObjectWithSchema, MappedPrimitive
 } from 'mapped-yaml'
 
 import { ParsingContext, ParsingRule } from '../../rule'
+import { hasField, validateBoolean, validateField, validateOptionalField, validateStringOrObject } from '../../validation'
 
 
 export type UpdateNode = MappedObjectWithSchema<{
@@ -14,11 +14,13 @@ export type UpdateNode = MappedObjectWithSchema<{
 
 
 export class UpdateRule extends ParsingRule {
-  applies(node: MappedNode): boolean {
-    return isObjectNode(node) &&
-      !!node.object['update'] &&
-      (isObjectNode(node.object['update']) || isStringNode(node.object['update']))
-      && (!node.object['include hidden'] || isBooleanNode(node.object['include hidden']))
+  applies(node: MappedNode) {
+    return hasField(node, 'update')
+  }
+
+  override validate(node: MappedNode) {
+    validateField(node, 'update', validateStringOrObject)
+    validateOptionalField(node, 'include hidden', validateBoolean)
   }
 
   resolve(node: UpdateNode, context: ParsingContext): Update {

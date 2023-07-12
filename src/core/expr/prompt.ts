@@ -1,7 +1,8 @@
 import { Prompt } from '@tmplr/core'
-import { isObjectNode, MappedNode, MappedObjectWithSchema } from 'mapped-yaml'
+import { MappedNode, MappedObjectWithSchema } from 'mapped-yaml'
 
 import { ParsingContext, ParsingRule } from '../../rule'
+import { hasField, validateField, validateStringOrObject } from '../../validation'
 
 
 export type PromptNode = MappedObjectWithSchema<{
@@ -12,7 +13,11 @@ export type PromptNode = MappedObjectWithSchema<{
 
 export class PromptRule extends ParsingRule {
   applies(node: MappedNode): boolean {
-    return isObjectNode(node) && !!node.object['prompt']
+    return hasField(node, 'prompt')
+  }
+
+  override validate(node: MappedNode) {
+    validateField(node, 'prompt', validateStringOrObject)
   }
 
   protected resolve(node: PromptNode, context: ParsingContext): Prompt {

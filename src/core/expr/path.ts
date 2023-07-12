@@ -1,7 +1,8 @@
 import { Path } from '@tmplr/core'
-import { isObjectNode, MappedNode, MappedObjectWithSchema } from 'mapped-yaml'
+import { MappedNode, MappedObjectWithSchema } from 'mapped-yaml'
 
 import { ParsingContext, ParsingRule } from '../../rule'
+import { hasField, validateField, validateStringOrObject } from '../../validation'
 
 
 export type PathNode = MappedObjectWithSchema<{
@@ -10,7 +11,11 @@ export type PathNode = MappedObjectWithSchema<{
 
 export class PathRule extends ParsingRule {
   applies(node: MappedNode): boolean {
-    return isObjectNode(node) && !!node.object['path']
+    return hasField(node, 'path')
+  }
+
+  override validate(node: MappedNode) {
+    validateField(node, 'path', validateStringOrObject)
   }
 
   protected resolve(node: PathNode, context: ParsingContext): Path {

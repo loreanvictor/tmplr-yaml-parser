@@ -1,10 +1,11 @@
 import {
-  MappedNode, MappedObject, isObjectNode, isStringNode, MappedObjectWithSchema, MappedPrimitive
+  MappedNode, MappedObject, isStringNode, MappedObjectWithSchema, MappedPrimitive
 } from 'mapped-yaml'
 import { Run } from '@tmplr/core'
 
 import { ParsingContext, ParsingRule } from '../../rule'
 import { LocatedError } from '../../location'
+import { hasField, validateField, validateObject, validateOptionalField, validateStringOrObject } from '../../validation'
 
 
 export type RunNode = MappedObjectWithSchema<{
@@ -15,12 +16,23 @@ export type RunNode = MappedObjectWithSchema<{
 
 
 export class RunRule extends ParsingRule {
-  applies(node: MappedNode): boolean {
-    return isObjectNode(node)
-      && !!node.object['run']
-      && (isObjectNode(node.object['run']) || isStringNode(node.object['run']))
-      && (!node.object['with'] || isObjectNode(node.object['with']))
-      && (!node.object['read'] || isObjectNode(node.object['read']))
+  applies(node: MappedNode) {
+    return hasField(node, 'run')
+  }
+
+  override validate(node: RunNode) {
+    validateField(node, 'run', validateStringOrObject)
+    validateOptionalField(node, 'with', validateObject)
+    validateOptionalField(node, 'read', validateObject)
+
+
+    if (node.object['read']) {
+      Object.entries(node.object.read.object).forEach(([_, value]) => {
+        if (!isStringNode(value)) {
+          throw new LocatedError('read values must be string', value.location)
+        }
+      })
+    }
   }
 
   resolve(node: RunNode, context: ParsingContext): Run {
@@ -37,10 +49,6 @@ export class RunRule extends ParsingRule {
 
     if (node.object.read) {
       Object.entries(node.object.read.object).forEach(([key, value]) => {
-        if (!isStringNode(value)) {
-          throw new LocatedError('read value must be a string', value.location)
-        }
-
         outputs[key] = value.object
       })
     }

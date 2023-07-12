@@ -1,7 +1,8 @@
 import { From } from '@tmplr/core'
-import { isObjectNode, isStringNode, MappedNode, MappedObjectWithSchema, MappedPrimitive } from 'mapped-yaml'
+import { isObjectNode, MappedNode, MappedObjectWithSchema, MappedPrimitive } from 'mapped-yaml'
 
 import { ParsingContext, ParsingRule } from '../../rule'
+import { hasField } from '../../validation'
 
 
 export type FromNode = MappedObjectWithSchema<{
@@ -12,8 +13,8 @@ export type FromNode = MappedObjectWithSchema<{
 
 export class FromRule extends ParsingRule {
   applies(node: MappedNode): boolean {
-    return isObjectNode(node) &&
-      !!node.object['from'] && isStringNode(node.object['from'])
+    return isObjectNode(node) && hasField(node, 'from')
+    // !!node.object['from'] && isStringNode(node.object['from'])
   }
 
   resolve(node: FromNode, context: ParsingContext): From {

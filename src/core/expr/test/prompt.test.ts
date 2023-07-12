@@ -112,4 +112,28 @@ prompt: 'what should X be?',
 
     jest.useRealTimers()
   })
+
+  test('throws an error when there is a typo in the prompt field.', async () => {
+    const file = `
+    read: x
+    promt: 'what should X be?',
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { file } })
+    const parser = new Parser([new ReadRule, new PromptRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('file')).rejects.toThrow(/promt.*prompt/)
+  })
+
+  test('throws an error when prompt field is of wrong type.', async () => {
+    const file = `
+    read: x
+    prompt: 123
+    `
+
+    const { scope, log, fs, context } = createTestSetup({ files: { file } })
+    const parser = new Parser([new ReadRule, new PromptRule, new EvalRule], scope, context, fs, log)
+
+    await expect(() => parser.parse('file')).rejects.toThrow(/prompt.*string/)
+  })
 })

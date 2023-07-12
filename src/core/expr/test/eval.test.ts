@@ -71,4 +71,62 @@ eval: 'halo {{ stuff.thing }}!'
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.get('_.x')).resolves.toBe('halo welt!')
   })
+
+  test('throws an error when steps field is of wrong type.', async () => {
+    const file = `
+    read: x
+    eval: 'halo!'
+    steps: 123
+    `
+
+    const { scope, context, log, fs } = createTestSetup({ files: { file } })
+
+    const parser = new Parser([ new ReadRule, new EvalRule ], scope, context, fs, log)
+    await expect(() => parser.parse('file')).rejects.toThrow(/steps.*array/)
+  })
+
+  test('throws an error when steps field has a typo.', async () => {
+    const file = `
+    read: x
+    eval: '{{greet}}!'
+    step:
+      - read: greet
+        eval: halo
+  `
+
+    const { scope, context, log, fs } = createTestSetup({ files: { file } })
+
+    const parser = new Parser([ new ReadRule, new EvalRule ], scope, context, fs, log)
+    await expect(() => parser.parse('file')).rejects.toThrow(/step.*steps/)
+  })
+
+  test('throws an error when eval field has a typo.', async () => {
+    const file = `
+    read: x
+    evl: '{{greet}}!'
+    step:
+      - read: greet
+        eval: halo
+  `
+
+    const { scope, context, log, fs } = createTestSetup({ files: { file } })
+
+    const parser = new Parser([ new ReadRule, new EvalRule ], scope, context, fs, log)
+    await expect(() => parser.parse('file')).rejects.toThrow(/evl.*eval/)
+  })
+
+  test('throws an error when eval field is of wrong type.', async () => {
+    const file = `
+    read: x
+    eval: 123
+    step:
+      - read: greet
+        eval: halo
+  `
+
+    const { scope, context, log, fs } = createTestSetup({ files: { file } })
+
+    const parser = new Parser([ new ReadRule, new EvalRule ], scope, context, fs, log)
+    await expect(() => parser.parse('file')).rejects.toThrow(/eval.*string/)
+  })
 })

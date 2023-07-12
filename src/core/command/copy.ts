@@ -1,10 +1,11 @@
 import { Copy } from '@tmplr/core'
 import {
-  isObjectNode, isStringNode, isBooleanNode, MappedNode,
+  MappedNode,
   MappedObject, MappedObjectWithSchema, MappedPrimitive
 } from 'mapped-yaml'
 
 import { ParsingContext, ParsingRule } from '../../rule'
+import { hasField, validateBoolean, validateField, validateOptionalField, validateStringOrObject } from '../../validation'
 
 
 export type CopyNode = MappedObjectWithSchema<{
@@ -15,13 +16,20 @@ export type CopyNode = MappedObjectWithSchema<{
 
 
 export class CopyRule extends ParsingRule {
-  applies(node: MappedNode): boolean {
-    return isObjectNode(node) &&
-      !!node.object['copy'] &&
-      (isObjectNode(node.object['copy']) || isStringNode(node.object['copy']))
-      && !!node.object['to'] &&
-      (isObjectNode(node.object['to']) || isStringNode(node.object['to']))
-      && (!node.object['include hidden'] || isBooleanNode(node.object['include hidden']))
+  applies(node: MappedNode) {
+    return hasField(node, 'copy')
+    // return isObjectNode(node) &&
+    //   !!node.object['copy'] &&
+    //   (isObjectNode(node.object['copy']) || isStringNode(node.object['copy']))
+    //   && !!node.object['to'] &&
+    //   (isObjectNode(node.object['to']) || isStringNode(node.object['to']))
+    //   && (!node.object['include hidden'] || isBooleanNode(node.object['include hidden']))
+  }
+
+  override validate(node: MappedNode) {
+    validateField(node, 'copy', validateStringOrObject)
+    validateField(node, 'to', validateStringOrObject)
+    validateOptionalField(node, 'include hidden', validateBoolean)
   }
 
   resolve(node: CopyNode, context: ParsingContext): Copy {

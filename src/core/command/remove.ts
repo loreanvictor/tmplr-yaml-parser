@@ -1,10 +1,10 @@
 import { Remove } from '@tmplr/core'
 import {
-  isObjectNode, isStringNode, isBooleanNode, MappedNode,
-  MappedObject, MappedObjectWithSchema, MappedPrimitive
+  MappedNode, MappedObject, MappedObjectWithSchema, MappedPrimitive
 } from 'mapped-yaml'
 
 import { ParsingContext, ParsingRule } from '../../rule'
+import { hasField, validateBoolean, validateField, validateOptionalField, validateStringOrObject } from '../../validation'
 
 
 export type RemoveNode = MappedObjectWithSchema<{
@@ -14,11 +14,13 @@ export type RemoveNode = MappedObjectWithSchema<{
 
 
 export class RemoveRule extends ParsingRule {
-  applies(node: MappedNode): boolean {
-    return isObjectNode(node) &&
-      !!node.object['remove'] &&
-      (isObjectNode(node.object['remove']) || isStringNode(node.object['remove']))
-      && (!node.object['include hidden'] || isBooleanNode(node.object['include hidden']))
+  applies(node: MappedNode) {
+    return hasField(node, 'remove')
+  }
+
+  override validate(node: MappedNode) {
+    validateField(node, 'remove', validateStringOrObject)
+    validateOptionalField(node, 'include hidden', validateBoolean)
   }
 
   resolve(node: RemoveNode, context: ParsingContext): Remove {

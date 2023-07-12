@@ -1,10 +1,12 @@
 import { Eval, Steps } from '@tmplr/core'
 import {
-  isArrayNode, isObjectNode, isStringNode, MappedArrayWithSchema,
+  isObjectNode,
+  isStringNode, MappedArrayWithSchema,
   MappedNode, MappedObject, MappedObjectWithSchema, MappedPrimitive
 } from 'mapped-yaml'
 
 import { ParsingRule, ParsingContext } from '../../rule'
+import { hasField, validateArray, validateField, validateOptionalField, validateString, validateStringOrObject } from '../../validation'
 
 
 export type EvalNode = MappedPrimitive<string> | MappedObjectWithSchema<{
@@ -15,13 +17,16 @@ export type EvalNode = MappedPrimitive<string> | MappedObjectWithSchema<{
 
 export class EvalRule extends ParsingRule {
   applies(node: MappedNode): boolean {
-    return isStringNode(node) || (
-      isObjectNode(node) &&
-      !!node.object['eval'] &&
-      isStringNode(node.object['eval']) && (
-        !node.object['steps'] || isArrayNode(node.object['steps'])
-      )
-    )
+    return isStringNode(node) || hasField(node, 'eval')
+  }
+
+  override validate(node: MappedNode) {
+    validateStringOrObject(node)
+
+    if (isObjectNode(node)) {
+      validateField(node, 'eval', validateString)
+      validateOptionalField(node, 'steps', validateArray)
+    }
   }
 
   resolve(node: EvalNode, context: ParsingContext): Eval {

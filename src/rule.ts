@@ -19,7 +19,13 @@ export abstract class ParsingRule {
   protected abstract resolve(node: MappedNode, context: ParsingContext): Runnable<any>
   abstract applies(node: MappedNode): boolean
 
+  validate(_: MappedNode) {
+    // Nothing particular, maybe children will override this
+  }
+
   parse(node: MappedNode, context: ParsingContext): LocatedRunnable<any> {
+    this.validate(node)
+
     return new LocatedRunnable(this.resolve(node, context), node.location)
   }
 }

@@ -1,8 +1,9 @@
 import { From, If } from '@tmplr/core'
-import { MappedNode, MappedObject, isObjectNode, isStringNode, MappedPrimitive, MappedObjectWithSchema } from 'mapped-yaml'
+import { MappedNode, MappedObject, isStringNode, MappedPrimitive, MappedObjectWithSchema } from 'mapped-yaml'
 import { LocatedRunnable } from '../../location'
 
 import { ParsingContext, ParsingRule } from '../../rule'
+import { hasField, validateField, validateObject, validateOptionalField, validateStringOrObject } from '../../validation'
 
 
 export type IfNode = MappedObjectWithSchema<{
@@ -12,11 +13,13 @@ export type IfNode = MappedObjectWithSchema<{
 
 
 export class IfRule extends ParsingRule {
-  applies(node: MappedNode): boolean {
-    return isObjectNode(node) &&
-      !!node.object['if'] &&
-      (isObjectNode(node.object['if']) || isStringNode(node.object['if']))
-      && (!node.object['else'] || isObjectNode(node.object['else']))
+  applies(node: MappedNode) {
+    return hasField(node, 'if')
+  }
+
+  override validate(node: MappedNode) {
+    validateField(node, 'if', validateStringOrObject)
+    validateOptionalField(node, 'else', validateObject)
   }
 
   resolve(node: IfNode, context: ParsingContext): If {
