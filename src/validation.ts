@@ -1,9 +1,10 @@
-import { distance, closest } from 'fastest-levenshtein'
+import distance from 'damerau-levenshtein'
 import { MappedNode, isObjectNode, isArrayNode, isBooleanNode, isStringNode } from 'mapped-yaml'
 import { LocatedError } from './location'
 
 
-const isTypo = (actual: string, expected: string) => distance(actual, expected) <= Math.min(2, expected.length - 1)
+const isTypo = (actual: string, expected: string) => distance(actual, expected).steps < 2
+const closest = (expected: string, candidates: string[]) => candidates.sort((a, b) => distance(a, expected).steps - distance(b, expected).steps)[0]
 
 
 export function hasField(node: MappedNode, field: string, strict = false): boolean {
