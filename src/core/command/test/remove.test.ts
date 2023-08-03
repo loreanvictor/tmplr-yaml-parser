@@ -2,6 +2,7 @@ import { createTestSetup } from '@tmplr/jest'
 
 import { RemoveRule, StepsRule, ReadRule, EvalRule, FromRule } from '../..'
 import { Parser } from '../../../parser'
+import { Flow } from '@tmplr/core'
 
 
 describe(RemoveRule, () => {
@@ -26,7 +27,7 @@ describe(RemoveRule, () => {
     )
 
     const cmd = await parser.parse('recipe')
-    await cmd.run().execute()
+    await cmd.run(new Flow()).execute()
 
     await expect(fs.access('target')).rejects.toThrow()
   })
@@ -47,7 +48,7 @@ describe(RemoveRule, () => {
     )
 
     const cmd = await parser.parse('recipe')
-    await cmd.run().execute()
+    await cmd.run(new Flow()).execute()
 
     await expect(fs.access('.target')).rejects.toThrow()
   })

@@ -61,14 +61,16 @@ export class UseRule extends ParsingRule {
 
     return new Use(
       target,
-      recipe,
-      inputs,
-      outputs,
       context.parseFile,
       context.filesystem,
       context.scope,
       context.evaluationContext,
-      context.changelog,
+      {
+        recipe,
+        inputs,
+        outputs,
+        log: context.changelog,
+      }
     )
   }
 }

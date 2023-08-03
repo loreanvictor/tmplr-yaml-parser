@@ -2,6 +2,7 @@ import { createTestSetup } from '@tmplr/jest'
 
 import { PathRule, ReadRule, EvalRule } from '../../'
 import { Parser } from '../../../parser'
+import { Flow } from '@tmplr/core'
 
 
 describe(PathRule, () => {
@@ -20,7 +21,7 @@ path: './whatever/{{ stuff.thing }}/xyz.yml'
     const parser = new Parser([new ReadRule, new PathRule, new EvalRule], scope, context, fs, log)
     const res = await parser.parse('file')
 
-    await res.run().execute()
+    await res.run(new Flow()).execute()
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.get('_.x')).resolves.toBe('/home/stuff/whatever/blabla/xyz.yml')

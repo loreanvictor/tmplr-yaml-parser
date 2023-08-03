@@ -1,3 +1,4 @@
+import { Flow } from '@tmplr/core'
 import { ValueRule } from '../value'
 
 
@@ -8,7 +9,7 @@ describe(ValueRule, () => {
 
     expect(rule.applies(node)).toBe(true)
     const value = await rule.parse(node, undefined as any)
-    await expect(value.run().execute()).resolves.toBe('foo')
+    await expect(value.run(new Flow()).execute()).resolves.toBe('foo')
   })
 
   test('reads numbers.', async () => {
@@ -17,7 +18,7 @@ describe(ValueRule, () => {
 
     expect(rule.applies(node)).toBe(true)
     const value = await rule.parse(node, undefined as any)
-    await expect(value.run().execute()).resolves.toBe('42')
+    await expect(value.run(new Flow()).execute()).resolves.toBe('42')
   })
 
   test('reads booleans.', async () => {
@@ -26,6 +27,6 @@ describe(ValueRule, () => {
 
     expect(rule.applies(node)).toBe(true)
     const value = await rule.parse(node, undefined as any)
-    await expect(value.run().execute()).resolves.toBe('false')
+    await expect(value.run(new Flow()).execute()).resolves.toBe('false')
   })
 })

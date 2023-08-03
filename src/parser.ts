@@ -11,7 +11,7 @@ export class Parser {
     readonly scope: Scope,
     readonly evaluationContext: EvaluationContext,
     readonly filesystem: FileSystem,
-    readonly changelog: ChangeLog,
+    readonly changelog?: ChangeLog,
   ) { }
 
   async parse(address: string) {
@@ -37,7 +37,7 @@ export class Parser {
         scope: Scope,
         _context: EvaluationContext,
         filesystem: FileSystem,
-        changelog: ChangeLog,
+        changelog?: ChangeLog,
       ) => {
         return new Parser(this.rules, scope, _context, filesystem, changelog).parseString(_content, _filename)
       }

@@ -14,7 +14,6 @@ export type FromNode = MappedObjectWithSchema<{
 export class FromRule extends ParsingRule {
   applies(node: MappedNode): boolean {
     return isObjectNode(node) && hasField(node, 'from')
-    // !!node.object['from'] && isStringNode(node.object['from'])
   }
 
   resolve(node: FromNode, context: ParsingContext): From {
@@ -22,7 +21,7 @@ export class FromRule extends ParsingRule {
     if (node.object.fallback) {
       const fallback = context.parseNode(node.object.fallback)
 
-      return new From(key, context.scope, fallback)
+      return new From(key, context.scope, { fallback })
     } else {
       return new From(key, context.scope)
     }

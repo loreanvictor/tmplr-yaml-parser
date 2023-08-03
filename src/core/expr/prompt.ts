@@ -24,6 +24,6 @@ export class PromptRule extends ParsingRule {
     const _default = node.object.default ? context.parseNode(node.object.default) : undefined
     const prompt = context.parseNode(node.object.prompt)
 
-    return new Prompt(prompt, _default)
+    return new Prompt(prompt, { default: _default })
   }
 }

@@ -1,4 +1,4 @@
-import { PromptExecution } from '@tmplr/core'
+import { Flow, PromptExecution } from '@tmplr/core'
 import { createTestSetup } from '@tmplr/jest'
 import { pipe, tap, observe } from 'streamlets'
 
@@ -31,7 +31,7 @@ default: "{{ stuff.name }}'s stuff",
     )
 
     const res = await parser.parse('file')
-    const exec = res.run()
+    const exec = res.run(new Flow())
 
     const setMessage = jest.fn()
     const setDefault = jest.fn()
@@ -83,7 +83,7 @@ prompt: 'what should X be?',
     )
 
     const res = await parser.parse('file')
-    const exec = res.run()
+    const exec = res.run(new Flow())
 
     pipe(
       exec.tracker,

@@ -27,6 +27,8 @@ export class DegitRule extends ParsingRule {
     const copy = context.parseNode(node.object.degit)
     const to = context.parseNode(node.object.to)
 
-    return new Degit(copy, to, context.filesystem, context.changelog)
+    return new Degit(copy, to, context.filesystem, {
+      log: context.changelog
+    })
   }
 }

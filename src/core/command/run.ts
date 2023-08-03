@@ -55,13 +55,15 @@ export class RunRule extends ParsingRule {
 
     return new Run(
       target,
-      inputs,
-      outputs,
       context.parseFile,
       context.filesystem,
       context.scope,
       context.evaluationContext,
-      context.changelog,
+      {
+        inputs,
+        outputs,
+        log: context.changelog,
+      }
     )
   }
 }

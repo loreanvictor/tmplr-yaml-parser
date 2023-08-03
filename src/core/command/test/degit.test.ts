@@ -2,6 +2,7 @@ import { createTestSetup } from '@tmplr/jest'
 
 import { DegitRule, StepsRule, ReadRule, EvalRule, FromRule } from '../..'
 import { Parser } from '../../../parser'
+import { Flow } from '@tmplr/core'
 
 
 describe(DegitRule, () => {
@@ -23,7 +24,7 @@ describe(DegitRule, () => {
       scope, context, fs, log
     )
     const cmd = await parser.parse('recipe')
-    await cmd.run().execute()
+    await cmd.run(new Flow()).execute()
 
     await expect(fs.read('target/file')).resolves.toBe('Hola!')
   })

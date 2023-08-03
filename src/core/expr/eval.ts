@@ -35,7 +35,9 @@ export class EvalRule extends ParsingRule {
     } else if (node.object.steps) {
       const steps = node.object.steps.object.map(step => context.parseNode(step))
 
-      return new Eval(node.object.eval.object, context.evaluationContext, new Steps(steps))
+      return new Eval(node.object.eval.object, context.evaluationContext, {
+        steps: new Steps(steps)
+      })
     } else {
       return new Eval(node.object.eval.object, context.evaluationContext)
     }

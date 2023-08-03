@@ -1,4 +1,4 @@
-import { ChoicesExecution } from '@tmplr/core'
+import { ChoicesExecution, Flow } from '@tmplr/core'
 import { createTestSetup } from '@tmplr/jest'
 import { pipe, tap, observe } from 'streamlets'
 
@@ -35,7 +35,7 @@ choices:
     ], scope, context, fs, log)
 
     const res = await parser.parse('file')
-    const exec = res.run()
+    const exec = res.run(new Flow())
 
     const setMessage = jest.fn()
     const setChoices = jest.fn()

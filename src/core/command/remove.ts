@@ -27,6 +27,9 @@ export class RemoveRule extends ParsingRule {
     const remove = context.parseNode(node.object.remove)
     const hidden = node.object['include hidden'] ? node.object['include hidden'].object : false
 
-    return new Remove(remove, hidden, context.filesystem, context.changelog)
+    return new Remove(remove, context.filesystem, {
+      hidden,
+      log: context.changelog
+    })
   }
 }

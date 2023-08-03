@@ -2,6 +2,7 @@ import { createTestSetup } from '@tmplr/jest'
 
 import { CopyRule, StepsRule, ReadRule, EvalRule, FromRule } from '../..'
 import { Parser } from '../../../parser'
+import { Flow } from '@tmplr/core'
 
 
 describe(CopyRule, () => {
@@ -32,7 +33,7 @@ steps:
       scope, context, fs, log
     )
     const cmd = await parser.parse('recipe')
-    await cmd.run().execute()
+    await cmd.run(new Flow()).execute()
 
     await expect(fs.read('target')).resolves.toBe('# Hellow YO YO')
     await expect(fs.read('source')).resolves.toBe('# Hellow {{ _.x | UPPERCASE }}')
@@ -66,7 +67,7 @@ steps:
       scope, context, fs, log
     )
     const cmd = await parser.parse('recipe')
-    await cmd.run().execute()
+    await cmd.run(new Flow()).execute()
 
     await expect(fs.read('target/.source')).resolves.toBe('# Hellow YO YO')
     await expect(fs.read('.source')).resolves.toBe('# Hellow {{ _.x | UPPERCASE }}')

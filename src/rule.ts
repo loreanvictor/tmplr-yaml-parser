@@ -9,7 +9,7 @@ export interface ParsingContext {
   evaluationContext: EvaluationContext
   extEvalContext: EvaluationContext,
   filesystem: FileSystem
-  changelog: ChangeLog
+  changelog?: ChangeLog
   parseNode: (node: MappedNode) => LocatedRunnable<any>
   parseFile: ParseFn,
 }

@@ -1,4 +1,4 @@
-import { Runnable, Execution } from '@tmplr/core'
+import { Runnable, Execution, Flow } from '@tmplr/core'
 import { Location } from 'mapped-file'
 
 
@@ -17,13 +17,14 @@ export class LocatedError extends Error {
 export class LocatedExecution<T> extends Execution<T> {
   constructor(
     public readonly runnable: LocatedRunnable<T>,
+    flow: Flow,
   ) {
-    super()
+    super(flow)
   }
 
   async run() {
     try {
-      return await this.delegate(this.runnable.proxy.run())
+      return await this.delegate(this.runnable.proxy.run(this.flow))
     } catch (err) {
       if (err instanceof LocatedError) {
         throw err
@@ -43,7 +44,7 @@ export class LocatedRunnable<T> extends Runnable<T> {
     super()
   }
 
-  run(): LocatedExecution<T> {
-    return new LocatedExecution(this)
+  run(flow: Flow): LocatedExecution<T> {
+    return new LocatedExecution(this, flow)
   }
 }

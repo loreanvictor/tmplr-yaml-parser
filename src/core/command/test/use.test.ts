@@ -3,6 +3,7 @@ import { createTestSetup } from '@tmplr/jest'
 import { UseRule, ReadRule, EvalRule } from '../../'
 import { Parser } from '../../../parser'
 import { LocatedError } from '../../../location'
+import { Flow } from '@tmplr/core'
 
 
 describe(UseRule, () => {
@@ -21,7 +22,7 @@ describe(UseRule, () => {
     const parser = new Parser([new UseRule('recipe'), new ReadRule, new EvalRule], scope, context, fs, log)
     const cmd = await parser.parse('main')
 
-    await cmd.run().execute()
+    await cmd.run(new Flow()).execute()
 
     expect(scope.vars.has('_.x')).resolves.toBe(true)
     expect(scope.vars.get('_.x')).resolves.toBe('halo!')
@@ -47,7 +48,7 @@ describe(UseRule, () => {
     const parser = new Parser([new UseRule('--'), new ReadRule, new EvalRule], scope, context, fs, log)
     const cmd = await parser.parse('main')
 
-    await cmd.run().execute()
+    await cmd.run(new Flow()).execute()
 
     expect(scope.vars.has('_.x')).resolves.toBe(true)
     expect(scope.vars.get('_.x')).resolves.toBe('YO_YO my man!')

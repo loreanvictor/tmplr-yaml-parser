@@ -3,6 +3,7 @@ import { createTestSetup } from '@tmplr/jest'
 import { ReadRule, FromRule, EvalRule } from '../..'
 import { LocatedError } from '../../../location'
 import { Parser } from '../../../parser'
+import { Flow } from '@tmplr/core'
 
 
 describe(ReadRule, () => {
@@ -21,7 +22,7 @@ describe(ReadRule, () => {
     const parser = new Parser([new ReadRule, new FromRule, new EvalRule], scope, context, fs, log)
     const res = await parser.parse('whatever')
 
-    await res.run().execute()
+    await res.run(new Flow()).execute()
 
     await expect(scope.vars.has('_.whut')).resolves.toBe(true)
     await expect(scope.vars.get('_.whut')).resolves.toBe('yo')
@@ -37,7 +38,7 @@ describe(ReadRule, () => {
     const parser = new Parser([new ReadRule, new FromRule, new EvalRule], scope, context, fs, log)
     const res = await parser.parse('whatever')
 
-    await res.run().execute()
+    await res.run(new Flow()).execute()
 
     await expect(scope.vars.has('_.whut')).resolves.toBe(true)
     await expect(scope.vars.get('_.whut')).resolves.toBe('wassup')
@@ -59,7 +60,7 @@ describe(ReadRule, () => {
     const res = await parser.parse('whatever')
 
     try {
-      await res.run().execute()
+      await res.run(new Flow()).execute()
       expect(true).toBe(false)
     } catch (err) {
       expect(err).toBeInstanceOf(LocatedError)

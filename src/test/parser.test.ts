@@ -2,6 +2,7 @@ import { createTestSetup } from '@tmplr/jest'
 
 import { Parser } from '../parser'
 import { EvalRule, ReadRule, StepsRule, FromRule } from '../core'
+import { Flow } from '@tmplr/core'
 
 
 describe(Parser, () => {
@@ -33,7 +34,7 @@ steps:
     ], scope, context, fs, log)
 
     const result = await parser.parse('file')
-    await result.run().execute()
+    await result.run(new Flow()).execute()
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.get('_.x')).resolves.toBe('hello')
@@ -69,7 +70,7 @@ steps:
     ], scope, context, fs, log)
 
     const result = await parser.parseString(file)
-    await result.run().execute()
+    await result.run(new Flow()).execute()
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.get('_.x')).resolves.toBe('hello')

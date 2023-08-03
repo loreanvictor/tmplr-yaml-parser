@@ -34,6 +34,8 @@ export class IfRule extends ParsingRule {
     const then = context.parseNode({ object: thn, location: node.location })
     const _else = node.object.else ? context.parseNode(node.object.else) : undefined
 
-    return new If(condition, then, _else)
+    return new If(condition, then, {
+      else: _else
+    })
   }
 }

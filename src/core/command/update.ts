@@ -27,6 +27,9 @@ export class UpdateRule extends ParsingRule {
     const update = context.parseNode(node.object.update)
     const hidden = node.object['include hidden'] ? node.object['include hidden'].object : false
 
-    return new Update(update, hidden, context.filesystem, context.extEvalContext, context.changelog)
+    return new Update(update, context.filesystem, context.extEvalContext, {
+      hidden,
+      log: context.changelog
+    })
   }
 }
