@@ -38,6 +38,19 @@ export function validateString(node: MappedNode) {
 }
 
 
+// TODO: also give a helpful message for typos?
+export function validateEnum(...values: string[]) {
+  return (node: MappedNode) => {
+    if (!isStringNode(node) || !values.includes(node.object)) {
+      throw new LocatedError(
+        `should be ${[values.slice(0, -1).join(', '), values.slice(-1)].join(' or ')}`,
+        node.location
+      )
+    }
+  }
+}
+
+
 export function validateArray(node: MappedNode) {
   if (!isArrayNode(node)) {
     throw new LocatedError('should be an array', node.location)

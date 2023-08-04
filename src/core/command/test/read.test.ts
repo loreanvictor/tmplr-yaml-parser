@@ -1,9 +1,9 @@
 import { createTestSetup } from '@tmplr/jest'
+import { Flow } from '@tmplr/core'
 
 import { ReadRule, FromRule, EvalRule } from '../..'
 import { LocatedError } from '../../../location'
 import { Parser } from '../../../parser'
-import { Flow } from '@tmplr/core'
 
 
 describe(ReadRule, () => {
