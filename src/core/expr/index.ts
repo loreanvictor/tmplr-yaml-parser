@@ -6,5 +6,5 @@ export * from './prompt'
 export * from './path'
 export * from './if'
 export * from './where'
-
+export * from './exists'
 
