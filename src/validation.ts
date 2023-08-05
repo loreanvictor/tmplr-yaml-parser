@@ -6,6 +6,14 @@ import { LocatedError } from './location'
 const isTypo = (actual: string, expected: string) => distance(actual, expected).steps < 2
 const closest = (expected: string, candidates: string[]) => candidates.sort((a, b) => distance(a, expected).steps - distance(b, expected).steps)[0]
 
+const hrlist = (items: string[]) => [
+  items
+    .map(item => `"${item}"`)
+    .slice(0, -1)
+    .join(', '),
+  `"${items.slice(-1)}"`
+].join(' or ')
+
 
 export function hasField(node: MappedNode, field: string, strict = false): boolean {
   if (strict) {
@@ -20,6 +28,13 @@ export function hasField(node: MappedNode, field: string, strict = false): boole
     }
 
     return Object.keys(node.object).some(key => isTypo(key, field))
+  }
+}
+
+
+export function validateExclusiveFields(node: MappedNode, ...fields: string[]) {
+  if (fields.filter(field => hasField(node, field)).length > 1) {
+    throw new LocatedError(`should contain only one of ${hrlist(fields)}.`, node.location)
   }
 }
 
@@ -43,7 +58,7 @@ export function validateEnum(...values: string[]) {
   return (node: MappedNode) => {
     if (!isStringNode(node) || !values.includes(node.object)) {
       throw new LocatedError(
-        `should be ${[values.slice(0, -1).join(', '), values.slice(-1)].join(' or ')}`,
+        `should be ${hrlist(values)}`,
         node.location
       )
     }

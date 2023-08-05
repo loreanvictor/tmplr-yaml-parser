@@ -1,9 +1,9 @@
-import { From, If } from '@tmplr/core'
+import { From, If, Noop } from '@tmplr/core'
 import { MappedNode, MappedObject, isStringNode, MappedPrimitive, MappedObjectWithSchema } from 'mapped-yaml'
 import { LocatedRunnable } from '../../location'
 
 import { ParsingContext, ParsingRule } from '../../rule'
-import { hasField, validateField, validateObject, validateOptionalField, validateStringOrObject } from '../../validation'
+import { hasField, validateExclusiveFields, validateField, validateObject, validateOptionalField, validateStringOrObject } from '../../validation'
 
 
 export type IfNode = MappedObjectWithSchema<{
@@ -14,28 +14,42 @@ export type IfNode = MappedObjectWithSchema<{
 
 export class IfRule extends ParsingRule {
   applies(node: MappedNode) {
-    return hasField(node, 'if')
+    return hasField(node, 'if') || hasField(node, 'if not')
   }
 
   override validate(node: MappedNode) {
-    validateField(node, 'if', validateStringOrObject)
+    if (hasField(node, 'if')) {
+      validateField(node, 'if', validateStringOrObject)
+    } else if (hasField(node, 'if not')) {
+      validateField(node, 'if not', validateStringOrObject)
+    }
+
+    validateExclusiveFields(node, 'if', 'if not')
     validateOptionalField(node, 'else', validateObject)
   }
 
   resolve(node: IfNode, context: ParsingContext): If {
-    const condition = isStringNode(node.object.if!) ?
-      new LocatedRunnable(new From(node.object.if.object, context.scope), node.object.if.location) :
-      context.parseNode(node.object.if)
+    const condfield = hasField(node, 'if') ? 'if' : 'if not'
+    const condnode = node.object[condfield]
+    const condition = isStringNode(condnode!) ?
+      new LocatedRunnable(new From(condnode.object, context.scope), condnode.location) :
+      context.parseNode(condnode!)
 
     const thn: {[key: string]: MappedNode} = { ...node.object }
-    delete thn['if']
+    delete thn[condfield]
     delete thn['else']
 
     const then = context.parseNode({ object: thn, location: node.location })
     const _else = node.object.else ? context.parseNode(node.object.else) : undefined
 
-    return new If(condition, then, {
-      else: _else
-    })
+    if (condfield === 'if') {
+      return new If(condition, then, {
+        else: _else
+      })
+    } else {
+      return new If(condition, _else || new Noop(), {
+        else: then
+      })
+    }
   }
 }
