@@ -1,5 +1,5 @@
-import { ReadRule, StepsRule, RunRule, UseRule, CopyRule, UpdateRule, RemoveRule, DegitRule, SkipRule } from './command'
-import { EvalRule, FromRule, PromptRule, ChoicesRule, PathRule, IfRule, ExistsRule } from './expr'
+import { ReadRule, StepsRule, RunRule, UseRule, CopyRule, UpdateRule, RemoveRule, DegitRule, SkipRule, WriteRule } from './command'
+import { EvalRule, FromRule, PromptRule, ChoicesRule, PathRule, IfRule, ExistsRule, FromFileRule } from './expr'
 
 
 export const STANDARD_RULE_SET = [
@@ -10,6 +10,7 @@ export const STANDARD_RULE_SET = [
   new CopyRule(),
   new UpdateRule(),
   new RemoveRule(),
+  new WriteRule(),
   new SkipRule(),
 
   new ReadRule(),
@@ -22,6 +23,7 @@ export const STANDARD_RULE_SET = [
   new PromptRule(),
   new PathRule(),
   new ExistsRule(),
+  new FromFileRule(),
 ]
 
 

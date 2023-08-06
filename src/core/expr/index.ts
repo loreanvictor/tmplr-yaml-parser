@@ -7,4 +7,6 @@ export * from './path'
 export * from './if'
 export * from './where'
 export * from './exists'
+export * from './from-file'
+
 

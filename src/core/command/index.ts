@@ -7,4 +7,4 @@ export * from './update'
 export * from './remove'
 export * from './degit'
 export * from './skip'
-
+export * from './write'

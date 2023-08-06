@@ -1,7 +1,7 @@
 import {
   LocatedError, LocatedExecution, LocatedRunnable,
   ParsingContext, ParsingRule, Parser,
-  IfNode, IfRule, CopyNode, CopyRule, DegitNode, DegitRule, ReadNode, ReadRule, RemoveNode, RemoveRule, RunNode, RunRule, StepsNode, StepsRule, UpdateNode, UpdateRule, UseNode, UseRule, EvalNode, EvalRule, FromNode, FromRule, PromptNode, PromptRule, ChoicesNode, ChoicesRule, PathNode, PathRule, WhereNode, WhereRule, ExistsRule, ExistsNode,
+  IfNode, IfRule, CopyNode, CopyRule, DegitNode, DegitRule, ReadNode, ReadRule, RemoveNode, RemoveRule, RunNode, RunRule, StepsNode, StepsRule, UpdateNode, UpdateRule, UseNode, UseRule, EvalNode, EvalRule, FromNode, FromRule, PromptNode, PromptRule, ChoicesNode, ChoicesRule, PathNode, PathRule, WhereNode, WhereRule, ExistsRule, ExistsNode, FromFileNode, FromFileRule, WriteRule, WriteNode,
 } from '../index'
 
 
@@ -44,4 +44,8 @@ test('everything is properly exported.', () => {
   expect(WhereRule).toBeDefined()
   expect(ExistsRule).toBeDefined()
   expect(<ExistsNode>{}).toBeDefined()
+  expect(FromFileRule).toBeDefined()
+  expect(<FromFileNode>{}).toBeDefined()
+  expect(WriteRule).toBeDefined()
+  expect(<WriteNode>{}).toBeDefined()
 })
