@@ -2,7 +2,6 @@ import { createTestSetup } from '@tmplr/jest'
 
 import { UpdateRule, StepsRule, ReadRule, EvalRule, FromRule } from '../..'
 import { Parser } from '../../../parser'
-import { Flow } from '@tmplr/core'
 
 
 describe(UpdateRule, () => {
@@ -14,7 +13,7 @@ steps:
   - update: "{{ stuff.file }}"
 `
 
-    const { fs, scope, context, log } = createTestSetup({
+    const { fs, scope, context, log, flow} = createTestSetup({
       files: {
         recipe,
         target: '# Hellow {{ _.x | UPPERCASE }}'
@@ -35,7 +34,7 @@ steps:
     )
 
     const cmd = await parser.parse('recipe')
-    await cmd.run(new Flow()).execute()
+    await cmd.run(flow).execute()
 
     await expect(fs.read('target')).resolves.toBe('# Hellow YO YO')
   })
@@ -49,7 +48,7 @@ steps:
     include hidden: true
 `
 
-    const { fs, scope, context, log } = createTestSetup({
+    const { fs, scope, context, log, flow } = createTestSetup({
       files: {
         recipe,
         '.target': '# Hellow {{ _.x | UPPERCASE }}'
@@ -69,7 +68,7 @@ steps:
     )
 
     const cmd = await parser.parse('recipe')
-    await cmd.run(new Flow()).execute()
+    await cmd.run(flow).execute()
 
     await expect(fs.read('.target')).resolves.toBe('# Hellow YO YO')
   })

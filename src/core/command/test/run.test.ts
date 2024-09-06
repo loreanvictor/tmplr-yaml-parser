@@ -3,12 +3,11 @@ import { createTestSetup } from '@tmplr/jest'
 import { RunRule, ReadRule, EvalRule } from '../../'
 import { Parser } from '../../../parser'
 import { LocatedError } from '../../../location'
-import { Flow } from '@tmplr/core'
 
 
 describe(RunRule, () => {
   test('parses a run command.', async () => {
-    const { scope, context, log, fs } = createTestSetup({
+    const { scope, context, log, fs, flow } = createTestSetup({
       files: {
         main: 'run: side\nread:\n  x: x',
         side: 'read: x\neval: halo!'
@@ -18,14 +17,14 @@ describe(RunRule, () => {
     const parser = new Parser([new RunRule, new ReadRule, new EvalRule], scope, context, fs, log)
     const cmd = await parser.parse('main')
 
-    await cmd.run(new Flow()).execute()
+    await cmd.run(flow).execute()
 
     expect(scope.vars.has('_.x')).resolves.toBe(true)
     expect(scope.vars.get('_.x')).resolves.toBe('halo!')
   })
 
   test('also parses input arguments properly.', async () => {
-    const { scope, context, log, fs } = createTestSetup({
+    const { scope, context, log, fs, flow } = createTestSetup({
       files: {
         main: 'run: side\nread:\n  x: x\nwith:\n  greet: "{{ stuff.thing | CONSTANT_CASE }}"',
         side: 'read: x\neval: "{{ args.greet }} my man!"'
@@ -40,7 +39,7 @@ describe(RunRule, () => {
     const parser = new Parser([new RunRule, new ReadRule, new EvalRule], scope, context, fs, log)
     const cmd = await parser.parse('main')
 
-    await cmd.run(new Flow()).execute()
+    await cmd.run(flow).execute()
 
     expect(scope.vars.has('_.x')).resolves.toBe(true)
     expect(scope.vars.get('_.x')).resolves.toBe('YO_YO my man!')

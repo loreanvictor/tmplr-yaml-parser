@@ -2,7 +2,6 @@ import { createTestSetup } from '@tmplr/jest'
 
 import { EvalRule, ReadRule, StepsRule } from '../..'
 import { Parser } from '../../../parser'
-import { Flow } from '@tmplr/core'
 
 
 describe(EvalRule, () => {
@@ -11,14 +10,14 @@ describe(EvalRule, () => {
 read: x
 eval: halo!
 `
-    const { scope, context, log, fs } = createTestSetup({
+    const { scope, context, log, fs, flow } = createTestSetup({
       files: { file },
     })
 
     const parser = new Parser([ new ReadRule, new EvalRule ], scope, context, fs, log)
     const res = await parser.parse('file')
 
-    await res.run(new Flow()).execute()
+    await res.run(flow).execute()
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.get('_.x')).resolves.toBe('halo!')
@@ -29,7 +28,7 @@ eval: halo!
 read: x
 eval: 'halo {{ stuff.thing }}!'
 `
-    const { scope, context, log, fs } = createTestSetup({
+    const { scope, context, log, fs, flow } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -41,7 +40,7 @@ eval: 'halo {{ stuff.thing }}!'
     const parser = new Parser([ new ReadRule, new EvalRule ], scope, context, fs, log)
     const res = await parser.parse('file')
 
-    await res.run(new Flow()).execute()
+    await res.run(flow).execute()
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.get('_.x')).resolves.toBe('halo welt!')
@@ -55,7 +54,7 @@ eval: 'halo {{ stuff.thing }}!'
       - read: greet
         eval: halo
     `
-    const { scope, context, log, fs } = createTestSetup({
+    const { scope, context, log, fs, flow } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -67,7 +66,7 @@ eval: 'halo {{ stuff.thing }}!'
     const parser = new Parser([ new ReadRule, new EvalRule, new StepsRule ], scope, context, fs, log)
     const res = await parser.parse('file')
 
-    await res.run(new Flow()).execute()
+    await res.run(flow).execute()
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.get('_.x')).resolves.toBe('halo welt!')

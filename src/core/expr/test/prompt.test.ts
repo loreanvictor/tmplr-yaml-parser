@@ -1,4 +1,4 @@
-import { Flow, PromptExecution } from '@tmplr/core'
+import { PromptExecution } from '@tmplr/core'
 import { createTestSetup } from '@tmplr/jest'
 import { pipe, tap, observe } from 'streamlets'
 
@@ -7,6 +7,12 @@ import { Parser } from '../../../parser'
 
 
 describe(PromptRule, () => {
+  beforeEach(() => {
+    Object.defineProperty(global, 'performance', {
+      writable: true,
+    })
+  })
+
   test('parses a prompt properly.', async () => {
     jest.useFakeTimers()
 
@@ -16,7 +22,7 @@ prompt: 'Dear {{ stuff.name }}, what should X be?',
 default: "{{ stuff.name }}'s stuff",
 `
 
-    const { scope, log, fs, context } = createTestSetup({
+    const { scope, log, fs, context, flow } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -31,7 +37,7 @@ default: "{{ stuff.name }}'s stuff",
     )
 
     const res = await parser.parse('file')
-    const exec = res.run(new Flow())
+    const exec = res.run(flow)
 
     const setMessage = jest.fn()
     const setDefault = jest.fn()
@@ -75,7 +81,7 @@ read: x
 prompt: 'what should X be?',
 `
 
-    const { scope, log, fs, context } = createTestSetup({ files: { file } })
+    const { scope, log, fs, context, flow } = createTestSetup({ files: { file } })
 
     const parser = new Parser(
       [new ReadRule, new PromptRule, new EvalRule],
@@ -83,7 +89,7 @@ prompt: 'what should X be?',
     )
 
     const res = await parser.parse('file')
-    const exec = res.run(new Flow())
+    const exec = res.run(flow)
 
     pipe(
       exec.tracker,

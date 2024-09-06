@@ -2,7 +2,6 @@ import { createTestSetup } from '@tmplr/jest'
 
 import { IfRule, EvalRule, ReadRule, StepsRule, FromRule } from '../..'
 import { Parser } from '../../../parser'
-import { Flow } from '@tmplr/core'
 
 
 describe(IfRule, () => {
@@ -19,7 +18,7 @@ steps:
     read: z
     eval: world!
 `
-    const { scope, context, log, fs } = createTestSetup({
+    const { scope, context, log, fs, flow } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -32,7 +31,7 @@ steps:
     const parser = new Parser([ new StepsRule, new IfRule, new ReadRule, new EvalRule ], scope, context, fs, log)
     const res = await parser.parse('file')
 
-    await res.run(new Flow()).execute()
+    await res.run(flow).execute()
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.get('_.x')).resolves.toBe('halo!')
@@ -57,7 +56,7 @@ steps:
       eval: world!!
 `
 
-    const { scope, context, log, fs } = createTestSetup({
+    const { scope, context, log, fs, flow } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -69,7 +68,7 @@ steps:
     const parser = new Parser([ new StepsRule, new IfRule, new ReadRule, new EvalRule ], scope, context, fs, log)
     const res = await parser.parse('file')
 
-    await res.run(new Flow()).execute()
+    await res.run(flow).execute()
 
     await expect(scope.vars.has('_.x')).resolves.toBe(false)
     await expect(scope.vars.has('_.y')).resolves.toBe(true)
@@ -94,7 +93,7 @@ steps:
     read: z
     eval: '{{ stuff.empty }} - world!'
 `
-    const { scope, context, log, fs } = createTestSetup({
+    const { scope, context, log, fs, flow } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -107,7 +106,7 @@ steps:
     const parser = new Parser([ new StepsRule, new IfRule, new ReadRule, new EvalRule ], scope, context, fs, log)
     const res = await parser.parse('file')
 
-    await res.run(new Flow()).execute()
+    await res.run(flow).execute()
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.get('_.x')).resolves.toBe('halo!')
@@ -137,7 +136,7 @@ steps:
       if not: stuff.third_thing
       eval: halo!
 `
-    const { scope, context, log, fs } = createTestSetup({
+    const { scope, context, log, fs, flow } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -153,7 +152,7 @@ steps:
     )
     const res = await parser.parse('file')
 
-    await res.run(new Flow()).execute()
+    await res.run(flow).execute()
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.get('_.x')).resolves.toBe('halo!')

@@ -2,7 +2,6 @@ import { createTestSetup } from '@tmplr/jest'
 
 import { WriteRule, StepsRule, ReadRule, EvalRule, FromRule } from '../..'
 import { Parser } from '../../../parser'
-import { Flow } from '@tmplr/core'
 
 
 describe(WriteRule, () => {
@@ -15,7 +14,7 @@ steps:
     to: '{{ stuff.newfile }}'
 `
 
-    const { fs, scope, context, log } = createTestSetup({
+    const { fs, scope, context, log, flow } = createTestSetup({
       files: { recipe },
       providers: {
         stuff: {
@@ -30,7 +29,7 @@ steps:
       scope, context, fs, log
     )
     const cmd = await parser.parse('recipe')
-    await cmd.run(new Flow()).execute()
+    await cmd.run(flow).execute()
 
     await expect(fs.read('target')).resolves.toBe('YO YO mate!')
   })

@@ -2,13 +2,11 @@ import { createTestSetup } from '@tmplr/jest'
 
 import { DegitRule, StepsRule, ReadRule, EvalRule, FromRule } from '../..'
 import { Parser } from '../../../parser'
-import { Flow } from '@tmplr/core'
 
 
 describe(DegitRule, () => {
-  test('properly parses copy commands.', async () => {
-
-    const { fs, scope, context, log } = createTestSetup({
+  test('properly parses degit commands.', async () => {
+    const { fs, scope, context, log, flow } = createTestSetup({
       files: {
         recipe: 'degit: source\nto: target',
       },
@@ -24,9 +22,32 @@ describe(DegitRule, () => {
       scope, context, fs, log
     )
     const cmd = await parser.parse('recipe')
-    await cmd.run(new Flow()).execute()
+    await cmd.run(flow).execute()
 
     await expect(fs.read('target/file')).resolves.toBe('Hola!')
+  })
+
+  test('properly parses degit commands for getting subgroups.', async () => {
+    const { fs, scope, context, log, flow } = createTestSetup({
+      files: {
+        recipe: 'degit: source\nto: target\nsubgroup: true',
+      },
+      remotes: {
+        source: {
+          file: 'Hola!'
+        }
+      }
+    })
+
+    const parser = new Parser(
+      [ new ReadRule, new DegitRule, new EvalRule, new StepsRule, new FromRule ],
+      scope, context, fs, log
+    )
+    const cmd = await parser.parse('recipe')
+    await cmd.run(flow).execute()
+
+    await expect(fs.read('target/file')).resolves.toBe('Hola!')
+    expect(fs.fetch).toHaveBeenCalledWith('source', 'target', { subgroup: true })
   })
 
   test('throws an error if degit field is of wrong type.', async () => {

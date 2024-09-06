@@ -1,9 +1,7 @@
 import { createTestSetup } from '@tmplr/jest'
 
 import { StepsRule, ReadRule, IfRule, SkipRule, EvalRule } from '../..'
-// import { LocatedError } from '../../../location'
 import { Parser } from '../../../parser'
-import { Flow } from '@tmplr/core'
 
 
 describe(SkipRule, () => {
@@ -19,14 +17,14 @@ steps:
     eval: halo!
 `
 
-    const { scope, context, log, fs } = createTestSetup({ files: { file }})
+    const { scope, context, log, fs, flow } = createTestSetup({ files: { file }})
     const parser = new Parser(
       [new IfRule, new SkipRule, new ReadRule, new EvalRule, new StepsRule],
       scope, context, fs, log
     )
     const res = await parser.parse('file')
 
-    await res.run(new Flow()).execute()
+    await res.run(flow).execute()
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.has('_.y')).resolves.toBe(false)
@@ -60,14 +58,14 @@ steps:
     eval: halo!
 `
 
-    const { scope, context, log, fs } = createTestSetup({ files: { file }})
+    const { scope, context, log, fs, flow } = createTestSetup({ files: { file }})
     const parser = new Parser(
       [new IfRule, new SkipRule, new ReadRule, new EvalRule, new StepsRule],
       scope, context, fs, log
     )
     const res = await parser.parse('file')
 
-    await res.run(new Flow()).execute()
+    await res.run(flow).execute()
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.has('_.y1')).resolves.toBe(true)

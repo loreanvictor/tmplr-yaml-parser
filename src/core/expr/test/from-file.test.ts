@@ -2,7 +2,6 @@ import { createTestSetup } from '@tmplr/jest'
 
 import { FromFileRule, ReadRule, EvalRule } from '../../'
 import { Parser } from '../../../parser'
-import { Flow } from '@tmplr/core'
 
 
 describe(FromFileRule, () => {
@@ -12,7 +11,7 @@ read: x
 from file: whatevs.txt
 `
 
-    const { scope, log, fs, context } = createTestSetup({
+    const { scope, log, fs, context, flow } = createTestSetup({
       files: {
         file,
         'whatevs.txt': 'blabla'
@@ -22,7 +21,7 @@ from file: whatevs.txt
     const parser = new Parser([new ReadRule, new EvalRule, new FromFileRule], scope, context, fs, log)
     const res = await parser.parse('file')
 
-    await res.run(new Flow()).execute()
+    await res.run(flow).execute()
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.get('_.x')).resolves.toBe('blabla')

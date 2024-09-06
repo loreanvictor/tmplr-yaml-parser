@@ -2,7 +2,6 @@ import { createTestSetup } from '@tmplr/jest'
 
 import { CopyRule, StepsRule, ReadRule, EvalRule, FromRule } from '../..'
 import { Parser } from '../../../parser'
-import { Flow } from '@tmplr/core'
 
 
 describe(CopyRule, () => {
@@ -15,7 +14,7 @@ steps:
     to: '{{ stuff.newfile }}'
 `
 
-    const { fs, scope, context, log } = createTestSetup({
+    const { fs, scope, context, log, flow } = createTestSetup({
       files: {
         recipe,
         source: '# Hellow {{ _.x | UPPERCASE }}'
@@ -33,7 +32,7 @@ steps:
       scope, context, fs, log
     )
     const cmd = await parser.parse('recipe')
-    await cmd.run(new Flow()).execute()
+    await cmd.run(flow).execute()
 
     await expect(fs.read('target')).resolves.toBe('# Hellow YO YO')
     await expect(fs.read('source')).resolves.toBe('# Hellow {{ _.x | UPPERCASE }}')
@@ -49,7 +48,7 @@ steps:
     include hidden: true
 `
 
-    const { fs, scope, context, log } = createTestSetup({
+    const { fs, scope, context, log, flow } = createTestSetup({
       files: {
         recipe,
         '.source': '# Hellow {{ _.x | UPPERCASE }}'
@@ -67,7 +66,7 @@ steps:
       scope, context, fs, log
     )
     const cmd = await parser.parse('recipe')
-    await cmd.run(new Flow()).execute()
+    await cmd.run(flow).execute()
 
     await expect(fs.read('target/.source')).resolves.toBe('# Hellow YO YO')
     await expect(fs.read('.source')).resolves.toBe('# Hellow {{ _.x | UPPERCASE }}')

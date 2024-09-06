@@ -2,12 +2,11 @@ import { createTestSetup } from '@tmplr/jest'
 
 import { RemoveRule, StepsRule, ReadRule, EvalRule, FromRule } from '../..'
 import { Parser } from '../../../parser'
-import { Flow } from '@tmplr/core'
 
 
 describe(RemoveRule, () => {
   test('properly parses remove commands.', async () => {
-    const { fs, scope, context, log } = createTestSetup({
+    const { fs, scope, context, log, flow } = createTestSetup({
       files: {
         recipe: 'remove: "{{ stuff.file }}"',
         target: '# Hellow!'
@@ -27,13 +26,13 @@ describe(RemoveRule, () => {
     )
 
     const cmd = await parser.parse('recipe')
-    await cmd.run(new Flow()).execute()
+    await cmd.run(flow).execute()
 
     await expect(fs.access('target')).rejects.toThrow()
   })
 
   test('reads the hidden flag properly as well.', async () => {
-    const { fs, scope, context, log } = createTestSetup({
+    const { fs, scope, context, log, flow } = createTestSetup({
       files: {
         recipe: 'remove: "*"\ninclude hidden: true',
         '.target': '# Hellow!'
@@ -48,7 +47,7 @@ describe(RemoveRule, () => {
     )
 
     const cmd = await parser.parse('recipe')
-    await cmd.run(new Flow()).execute()
+    await cmd.run(flow).execute()
 
     await expect(fs.access('.target')).rejects.toThrow()
   })

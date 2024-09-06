@@ -1,5 +1,4 @@
 import { createTestSetup } from '@tmplr/jest'
-import { Flow } from '@tmplr/core'
 
 import { ReadRule, FromRule, EvalRule } from '../..'
 import { LocatedError } from '../../../location'
@@ -8,7 +7,7 @@ import { Parser } from '../../../parser'
 
 describe(ReadRule, () => {
   test('parses a read command properly.', async () => {
-    const { scope, context, log, fs } = createTestSetup({
+    const { scope, context, log, fs, flow } = createTestSetup({
       files: {
         whatever: 'read: whut\nfrom: stuff.thing'
       },
@@ -22,14 +21,14 @@ describe(ReadRule, () => {
     const parser = new Parser([new ReadRule, new FromRule, new EvalRule], scope, context, fs, log)
     const res = await parser.parse('whatever')
 
-    await res.run(new Flow()).execute()
+    await res.run(flow).execute()
 
     await expect(scope.vars.has('_.whut')).resolves.toBe(true)
     await expect(scope.vars.get('_.whut')).resolves.toBe('yo')
   })
 
   test('parses a read command fallback properly.', async () => {
-    const { scope, context, fs, log } = createTestSetup({
+    const { scope, context, fs, log, flow } = createTestSetup({
       files: {
         whatever: 'read: whut\nfrom: stuff.thing\nfallback: wassup'
       }
@@ -38,14 +37,14 @@ describe(ReadRule, () => {
     const parser = new Parser([new ReadRule, new FromRule, new EvalRule], scope, context, fs, log)
     const res = await parser.parse('whatever')
 
-    await res.run(new Flow()).execute()
+    await res.run(flow).execute()
 
     await expect(scope.vars.has('_.whut')).resolves.toBe(true)
     await expect(scope.vars.get('_.whut')).resolves.toBe('wassup')
   })
 
   test('isolates error boundaries properly.', async () => {
-    const { scope, context, fs, log } = createTestSetup({
+    const { scope, context, fs, log, flow } = createTestSetup({
       files: {
         whatever: 'read: whut\nfrom: stuff.thing'
       },
@@ -60,7 +59,7 @@ describe(ReadRule, () => {
     const res = await parser.parse('whatever')
 
     try {
-      await res.run(new Flow()).execute()
+      await res.run(flow).execute()
       expect(true).toBe(false)
     } catch (err) {
       expect(err).toBeInstanceOf(LocatedError)

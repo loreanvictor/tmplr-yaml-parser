@@ -1,4 +1,4 @@
-import { ChoicesExecution, Flow } from '@tmplr/core'
+import { ChoicesExecution } from '@tmplr/core'
 import { createTestSetup } from '@tmplr/jest'
 import { pipe, tap, observe } from 'streamlets'
 
@@ -8,6 +8,12 @@ import { Parser } from '../../../parser'
 
 
 describe(ChoicesRule, () => {
+  beforeEach(() => {
+    Object.defineProperty(global, 'performance', {
+      writable: true,
+    })
+  })
+
   test('parses choices properly.', async () => {
     jest.useFakeTimers()
 
@@ -21,7 +27,7 @@ choices:
     value: 'hola {{ stuff.name }}'
 `
 
-    const { scope, log, fs, context } = createTestSetup({
+    const { scope, log, fs, context, flow } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -35,7 +41,7 @@ choices:
     ], scope, context, fs, log)
 
     const res = await parser.parse('file')
-    const exec = res.run(new Flow())
+    const exec = res.run(flow)
 
     const setMessage = jest.fn()
     const setChoices = jest.fn()

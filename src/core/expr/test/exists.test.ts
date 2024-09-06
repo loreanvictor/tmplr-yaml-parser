@@ -2,7 +2,6 @@ import { createTestSetup } from '@tmplr/jest'
 
 import { ExistsRule, StepsRule, ReadRule, EvalRule, FromRule } from '../..'
 import { Parser } from '../../../parser'
-import { Flow } from '@tmplr/core'
 
 
 describe(ExistsRule, () => {
@@ -16,7 +15,7 @@ describe(ExistsRule, () => {
       exists: '{{ stuff.file }}.txt'
   `
 
-    const { fs, scope, context, log } = createTestSetup({
+    const { fs, scope, context, log, flow } = createTestSetup({
       files: {
         recipe,
         target: '# Hellow!',
@@ -34,7 +33,7 @@ describe(ExistsRule, () => {
     )
 
     const cmd = await parser.parse('recipe')
-    await cmd.run(new Flow()).execute()
+    await cmd.run(flow).execute()
 
     await expect(scope.vars.has('_.flag')).resolves.toBe(true)
     await expect(scope.vars.get('_.flag')).resolves.toMatch(/target$/)
@@ -53,7 +52,7 @@ describe(ExistsRule, () => {
       include hidden: true
   `
 
-    const { fs, scope, context, log } = createTestSetup({
+    const { fs, scope, context, log, flow } = createTestSetup({
       files: {
         recipe,
         '.stuff/target': '# Hellow!',
@@ -71,7 +70,7 @@ describe(ExistsRule, () => {
     )
 
     const cmd = await parser.parse('recipe')
-    await cmd.run(new Flow()).execute()
+    await cmd.run(flow).execute()
 
     await expect(scope.vars.has('_.flag')).resolves.toBe(true)
     await expect(scope.vars.get('_.flag')).resolves.toBe('')

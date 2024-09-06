@@ -2,7 +2,6 @@ import { createTestSetup } from '@tmplr/jest'
 
 import { WhereRule, EvalRule, ReadRule, StepsRule } from '../..'
 import { Parser } from '../../../parser'
-import { Flow } from '@tmplr/core'
 
 
 describe(WhereRule, () => {
@@ -26,7 +25,7 @@ steps:
     else:
       eval: jill
 `
-    const { scope, context, log, fs } = createTestSetup({
+    const { scope, context, log, fs, flow } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -39,7 +38,7 @@ steps:
     const parser = new Parser([ new StepsRule, new ReadRule, new WhereRule, new EvalRule ], scope, context, fs, log)
     const res = await parser.parse('file')
 
-    await res.run(new Flow()).execute()
+    await res.run(flow).execute()
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.get('_.x')).resolves.toBe('halo!')
@@ -68,7 +67,7 @@ steps:
       eval: '{{ stuff.empty }} - yo'
     eval: '{{ stuff.empty }} - world!'
 `
-    const { scope, context, log, fs } = createTestSetup({
+    const { scope, context, log, fs, flow } = createTestSetup({
       files: { file },
       providers: {
         stuff: {
@@ -81,7 +80,7 @@ steps:
     const parser = new Parser([ new StepsRule, new ReadRule, new WhereRule, new EvalRule ], scope, context, fs, log)
     const res = await parser.parse('file')
 
-    await res.run(new Flow()).execute()
+    await res.run(flow).execute()
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.get('_.x')).resolves.toBe('halo!')
