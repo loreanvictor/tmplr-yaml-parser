@@ -8,15 +8,7 @@ import { Parser } from '../../../parser'
 
 
 describe(ChoicesRule, () => {
-  beforeEach(() => {
-    Object.defineProperty(global, 'performance', {
-      writable: true,
-    })
-  })
-
   test('parses choices properly.', async () => {
-    jest.useFakeTimers()
-
     const file = `
 read: msg
 prompt: What's the message?
@@ -57,8 +49,7 @@ choices:
             setChoices,
             unplug: () => {},
             pick: () => new Promise(resolve => {
-              setTimeout(() => resolve(1), 100)
-              jest.advanceTimersByTime(100)
+              setTimeout(() => resolve(1), 10)
             })
           }))
         }
@@ -73,8 +64,6 @@ choices:
 
     await expect(scope.vars.has('_.msg')).resolves.toBe(true)
     await expect(scope.vars.get('_.msg')).resolves.toBe('hellow world')
-
-    jest.useRealTimers()
   })
 
   test('throws error when choices are not described properly.', async () => {

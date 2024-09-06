@@ -7,15 +7,7 @@ import { Parser } from '../../../parser'
 
 
 describe(PromptRule, () => {
-  beforeEach(() => {
-    Object.defineProperty(global, 'performance', {
-      writable: true,
-    })
-  })
-
   test('parses a prompt properly.', async () => {
-    jest.useFakeTimers()
-
     const file = `
 read: x
 prompt: 'Dear {{ stuff.name }}, what should X be?',
@@ -53,8 +45,7 @@ default: "{{ stuff.name }}'s stuff",
             setDefault,
             unplug: () => {},
             value: () => new Promise(resolve => {
-              setTimeout(() => resolve('42'), 100)
-              jest.advanceTimersByTime(100)
+              setTimeout(() => resolve('42'), 10)
             })
           }))
         }
@@ -69,13 +60,9 @@ default: "{{ stuff.name }}'s stuff",
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.get('_.x')).resolves.toBe('42')
-
-    jest.useRealTimers()
   })
 
   test('parses a prompt without default as well.', async () => {
-    jest.useFakeTimers()
-
     const file = `
 read: x
 prompt: 'what should X be?',
@@ -102,8 +89,7 @@ prompt: 'what should X be?',
             setDefault: () => {},
             unplug: () => {},
             value: () => new Promise(resolve => {
-              setTimeout(() => resolve('Hola hola'), 100)
-              jest.advanceTimersByTime(100)
+              setTimeout(() => resolve('Hola hola'), 10)
             })
           }))
         }
@@ -115,8 +101,6 @@ prompt: 'what should X be?',
 
     await expect(scope.vars.has('_.x')).resolves.toBe(true)
     await expect(scope.vars.get('_.x')).resolves.toBe('Hola hola')
-
-    jest.useRealTimers()
   })
 
   test('throws an error when there is a typo in the prompt field.', async () => {
